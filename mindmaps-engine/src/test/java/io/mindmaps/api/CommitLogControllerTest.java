@@ -34,6 +34,7 @@ import io.mindmaps.postprocessing.Cache;
 import io.mindmaps.util.ConfigProperties;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -43,6 +44,7 @@ import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+@Ignore
 public class CommitLogControllerTest {
     private Properties prop = new Properties();
     private Cache cache;

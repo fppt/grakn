@@ -28,10 +28,7 @@ import io.mindmaps.graql.QueryBuilder;
 import io.mindmaps.graql.Var;
 import io.mindmaps.loader.BlockingLoader;
 import io.mindmaps.util.ConfigProperties;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
@@ -41,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+@Ignore
 public class BlockingLoaderTest {
 
     Properties prop = new Properties();

@@ -28,6 +28,7 @@ import io.mindmaps.util.ConfigProperties;
 import io.mindmaps.constants.RESTUtil;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -36,6 +37,7 @@ import static com.jayway.restassured.RestAssured.get;
 import static com.jayway.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class TransactionControllerTest {
 
     Properties prop = new Properties();

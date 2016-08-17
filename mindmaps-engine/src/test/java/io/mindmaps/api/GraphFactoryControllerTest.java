@@ -29,6 +29,7 @@ import io.mindmaps.core.implementation.AbstractMindmapsGraph;
 import io.mindmaps.factory.MindmapsClient;
 import io.mindmaps.util.ConfigProperties;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -40,6 +41,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.*;
 
+@Ignore
 public class GraphFactoryControllerTest {
     private Properties prop = new Properties();
 

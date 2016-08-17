@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+@Ignore
 public class DistributedLoaderTest {
 
     Properties prop = new Properties();

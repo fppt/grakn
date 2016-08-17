@@ -29,6 +29,7 @@ import io.mindmaps.factory.GraphFactory;
 import io.mindmaps.util.ConfigProperties;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -36,6 +37,7 @@ import java.util.Properties;
 import static com.jayway.restassured.RestAssured.get;
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class RemoteShellControllerTest {
 
     Properties prop = new Properties();
