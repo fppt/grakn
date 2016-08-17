@@ -31,6 +31,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.*;
 
+@Ignore
 public class MindmapsTitanGraphFactoryTest {
     private final static String TEST_CONFIG = "../conf/mindmaps-test.properties";
     private final static String TEST_URI = "localhost";
