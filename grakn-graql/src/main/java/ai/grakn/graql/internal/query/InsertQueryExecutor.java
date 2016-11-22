@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static ai.grakn.graql.internal.util.CommonUtil.optionalOr;
-import static ai.grakn.util.ErrorMessage.INSERT_INSTANCE_WITH_ID;
 import static ai.grakn.util.ErrorMessage.INSERT_NON_RESOURCE_WITH_VALUE;
 
 /**
@@ -265,10 +264,7 @@ public class InsertQueryExecutor {
     private <T extends Type, S extends Instance> S addOrGetInstance(
             Optional<String> id, Supplier<S> addInstance
     ) {
-        return id.map(graph::<S>getConcept).orElseGet(() -> {
-            if (id.isPresent()) throw new IllegalStateException(INSERT_INSTANCE_WITH_ID.getMessage(id.get()));
-            return addInstance.get();
-        });
+        return id.map(graph::<S>getConcept).orElseGet(addInstance);
     }
 
     /**
