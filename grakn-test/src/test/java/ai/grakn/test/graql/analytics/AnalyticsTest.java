@@ -28,12 +28,11 @@ import ai.grakn.concept.RelationType;
 import ai.grakn.concept.Resource;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.concept.RoleType;
-import ai.grakn.graph.internal.AbstractGraknGraph;
+import ai.grakn.exception.GraknValidationException;
 import ai.grakn.graql.internal.analytics.Analytics;
 import ai.grakn.test.AbstractGraphTest;
 import ai.grakn.util.Schema;
 import com.google.common.collect.Sets;
-import ai.grakn.exception.GraknValidationException;
 import org.apache.commons.collections.CollectionUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -85,7 +84,7 @@ public class AnalyticsTest extends AbstractGraphTest {
 
         // check that dog has a degree to confirm sub has been inferred
         graph = Grakn.factory(Grakn.DEFAULT_URI, graph.getKeyspace()).getGraph();
-        Collection<Resource<?>> degrees = graph.getEntity(foofoo).resources();
+        Collection<Resource<?>> degrees = graph.getConcept(foofoo).asEntity().resources();
         assertTrue(degrees.iterator().next().getValue().equals(0L));
     }
 
@@ -153,18 +152,18 @@ public class AnalyticsTest extends AbstractGraphTest {
 
         // relate them
         String id1 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity1))
-                .putRolePlayer(role2, graph.getInstance(entity2))
+                .putRolePlayer(role1, graph.getConcept(entity1))
+                .putRolePlayer(role2, graph.getConcept(entity2))
                 .getId();
 
         String id2 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity2))
-                .putRolePlayer(role2, graph.getInstance(entity3))
+                .putRolePlayer(role1, graph.getConcept(entity2))
+                .putRolePlayer(role2, graph.getConcept(entity3))
                 .getId();
 
         String id3 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity2))
-                .putRolePlayer(role2, graph.getInstance(entity4))
+                .putRolePlayer(role1, graph.getConcept(entity2))
+                .putRolePlayer(role2, graph.getConcept(entity4))
                 .getId();
 
         graph.commit();
@@ -218,7 +217,7 @@ public class AnalyticsTest extends AbstractGraphTest {
 
     private static void checkDegrees(GraknGraph graph, Map<String, Long> correctDegrees) {
         correctDegrees.entrySet().forEach(entry -> {
-            Instance instance = graph.getInstance(entry.getKey());
+            Instance instance = graph.getConcept(entry.getKey());
             // TODO: when shortcut edges are removed properly during concurrent deletion revert code
             Collection<Resource<?>> resources = null;
             if (instance.isEntity()) {
@@ -255,18 +254,18 @@ public class AnalyticsTest extends AbstractGraphTest {
 
         // relate them
         String id1 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity1))
-                .putRolePlayer(role2, graph.getInstance(entity2))
+                .putRolePlayer(role1, graph.getConcept(entity1))
+                .putRolePlayer(role2, graph.getConcept(entity2))
                 .getId();
 
         String id2 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity2))
-                .putRolePlayer(role2, graph.getInstance(entity3))
+                .putRolePlayer(role1, graph.getConcept(entity2))
+                .putRolePlayer(role2, graph.getConcept(entity3))
                 .getId();
 
         String id3 = related.addRelation()
-                .putRolePlayer(role1, graph.getInstance(entity2))
-                .putRolePlayer(role2, graph.getInstance(entity4))
+                .putRolePlayer(role1, graph.getConcept(entity2))
+                .putRolePlayer(role2, graph.getConcept(entity4))
                 .getId();
 
         graph.commit();
@@ -450,7 +449,7 @@ public class AnalyticsTest extends AbstractGraphTest {
         graph = factory.getGraph();
         GraknGraph finalGraph = graph;
         referenceDegrees.entrySet().forEach(entry -> {
-            Instance instance = finalGraph.getInstance(entry.getKey());
+            Instance instance = finalGraph.getConcept(entry.getKey());
             if (instance.isEntity()) {
                 assertTrue(instance.asEntity().resources().iterator().next().getValue().equals(entry.getValue()));
             } else if (instance.isRelation()) {
@@ -484,7 +483,7 @@ public class AnalyticsTest extends AbstractGraphTest {
         // check degrees are correct
         GraknGraph finalGraph1 = graph;
         referenceDegrees.entrySet().forEach(entry -> {
-            Instance instance = finalGraph1.getInstance(entry.getKey());
+            Instance instance = finalGraph1.getConcept(entry.getKey());
             if (instance.isEntity()) {
                 assertTrue(instance.asEntity().resources().iterator().next().getValue().equals(entry.getValue()));
             } else if (instance.isRelation()) {
@@ -552,7 +551,7 @@ public class AnalyticsTest extends AbstractGraphTest {
         // check degrees are correct
         boolean isSeen = false;
         for (Map.Entry<String, Long> entry : referenceDegrees.entrySet()) {
-            Instance instance = graph.getInstance(entry.getKey());
+            Instance instance = graph.getConcept(entry.getKey());
             if (instance.isEntity()) {
                 for (Resource<?> resource : instance.asEntity().resources()) {
                     if (resource.type().equals(degreeResource)) {
