@@ -180,7 +180,7 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
 
         //noinspection unchecked
         GraphTraversal<Vertex, Vertex> traversal = getGraknGraph().getTinkerPopGraph().traversal().V()
-                .has(Schema.ConceptProperty.ITEM_IDENTIFIER.name(), getId())
+                .has(Schema.ConceptProperty.NAME.name(), getName())
                 .union(__.identity(), __.repeat(__.in(Schema.EdgeLabel.SUB.getLabel())).emit()).unfold()
                 .in(Schema.EdgeLabel.ISA.getLabel())
                 .union(__.identity(), __.repeat(__.in(Schema.EdgeLabel.SUB.getLabel())).emit()).unfold();
@@ -322,7 +322,7 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
     protected void checkTypeMutation(){
         getGraknGraph().checkOntologyMutation();
         for (Schema.MetaSchema metaSchema : Schema.MetaSchema.values()) {
-            if(metaSchema.getId().equals(getId())){
+            if(metaSchema.getId().equals(getName())){
                 throw new ConceptException(ErrorMessage.META_TYPE_IMMUTABLE.getMessage(metaSchema.getId()));
             }
         }
@@ -335,7 +335,7 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
      */
     @Override
     public RelationType hasResource(ResourceType resourceType){
-        String resourceTypeId = resourceType.getId();
+        String resourceTypeId = resourceType.getName();
         RoleType ownerRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_OWNER.getId(resourceTypeId));
         RoleType valueRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_VALUE.getId(resourceTypeId));
 
@@ -346,5 +346,14 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
                 putRelationTypeImplicit(Schema.Resource.HAS_RESOURCE.getId(resourceTypeId)).
                 hasRole(ownerRole).
                 hasRole(valueRole);
+    }
+
+    /**
+     *
+     * @return The name of this type
+     */
+    @Override
+    public String getName() {
+        return getProperty(Schema.ConceptProperty.NAME);
     }
 }
