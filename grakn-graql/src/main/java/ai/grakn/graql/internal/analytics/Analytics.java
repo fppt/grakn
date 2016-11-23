@@ -114,31 +114,6 @@ public class Analytics {
             graph.getMetaResourceType().instances().forEach(type -> this.subtypeNames.add(type.asType().getName()));
             graph.getMetaRelationType().instances().forEach(type -> this.subtypeNames.add(type.asType().getName()));
             this.subtypeNames.removeAll(analyticsElements);
-
-//            // collect meta-types to exclude them as they do not have instances
-//            Set<Concept> excludedTypes = new HashSet<>();
-//            excludedTypes.add(graph.getMetaType());
-//            excludedTypes.add(graph.getMetaEntityType());
-//            excludedTypes.add(graph.getMetaRelationType());
-//            excludedTypes.add(graph.getMetaResourceType());
-//            excludedTypes.add(graph.getMetaRoleType());
-//            excludedTypes.add(graph.getMetaRuleType());
-//
-//            // collect role-types to exclude them because the user does not see castings
-//            excludedTypes.addAll(graph.getMetaRoleType().instances());
-//            excludedTypes.addAll(graph.getMetaRuleType().instances());
-//
-//            // collect analytics resource types to exclude
-//            CommonOLAP.analyticsElements.stream()
-//                    .filter(element -> graph.getType(element) != null)
-//                    .map(graph::getType)
-//                    .forEach(excludedTypes::add);
-//
-//            // fetch all types
-//            graph.getMetaType().instances().stream()
-//                    .filter(concept -> !excludedTypes.contains(concept))
-//                    .map(Concept::asType)
-//                    .forEach(type -> this.subtypeNames.add(type.getId()));
         } else {
             for (Type t : subtypes) {
                 t.subTypes().forEach(subtype -> this.subtypeNames.add(subtype.getName()));
