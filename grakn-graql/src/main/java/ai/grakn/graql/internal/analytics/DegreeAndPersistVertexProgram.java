@@ -43,7 +43,13 @@ class DegreeAndPersistVertexProgram extends GraknVertexProgram<Long> {
     public void safeExecute(final Vertex vertex, Messenger<Long> messenger, final Memory memory) {
         switch (memory.getIteration()) {
             case 0:
+                vertex.properties().forEachRemaining(v-> System.out.println("v = " + v));
+                System.out.println("vertex.id() = " + vertex.id());
+                System.out.println("vertex.label() = " + vertex.label());
+                System.out.println("Utility.getVertexType(vertex) = " + Utility.getVertexType(vertex));
+                System.out.println("selectedTypes = " + selectedTypes);
                 if (selectedTypes.contains(Utility.getVertexType(vertex)))
+                    System.out.println("vertex.id() = " + vertex.id());
                     degreeStep0(vertex, messenger);
                 break;
 

@@ -89,6 +89,7 @@ public enum ErrorMessage {
 
     MUST_BE_RESOURCE_TYPE("type '%s' must be a resource-type"),
     ID_NOT_FOUND("id '%s' not found"),
+    TYPE_NAME_NOT_FOUND("type name '%s' not found"),
     NOT_A_ROLE_TYPE("'%s' is not a role type. perhaps you meant 'isa %s'?"),
     NOT_A_RELATION_TYPE("'%s' is not a relation type. perhaps you forgot to separate your statements with a ';'?"),
     NOT_ROLE_IN_RELATION("'%s' is not a valid role type for relation type '%s'. valid role types are: '%s'"),
