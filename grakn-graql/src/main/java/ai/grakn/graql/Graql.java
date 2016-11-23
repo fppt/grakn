@@ -18,13 +18,6 @@
 
 package ai.grakn.graql;
 
-import ai.grakn.graql.admin.Conjunction;
-import ai.grakn.graql.admin.Disjunction;
-import ai.grakn.graql.admin.PatternAdmin;
-import ai.grakn.graql.internal.pattern.Patterns;
-import ai.grakn.graql.internal.query.aggregate.Aggregates;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import ai.grakn.concept.Concept;
 import ai.grakn.graql.admin.Conjunction;
 import ai.grakn.graql.admin.Disjunction;
@@ -33,6 +26,8 @@ import ai.grakn.graql.internal.pattern.Patterns;
 import ai.grakn.graql.internal.query.aggregate.Aggregates;
 import ai.grakn.graql.internal.query.predicate.Predicates;
 import ai.grakn.graql.internal.util.AdminConverter;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import java.io.InputStream;
 import java.util.Arrays;
@@ -142,11 +137,11 @@ public class Graql {
     }
 
     /**
-     * @param id the id of a concept
-     * @return a query variable that identifies a concept by id
+     * @param name the name of a concept
+     * @return a query variable that identifies a concept by name
      */
-    public static Var id(String id) {
-        return var().id(id);
+    public static Var name(String name) {
+        return var().name(name);
     }
 
     /**

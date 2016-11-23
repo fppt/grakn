@@ -36,7 +36,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static ai.grakn.graql.Graql.id;
+import static ai.grakn.graql.Graql.name;
 
 public class HasResourceProperty extends AbstractVarProperty implements NamedProperty {
 
@@ -80,8 +80,8 @@ public class HasResourceProperty extends AbstractVarProperty implements NamedPro
         Optional<String> hasResourceValue = Optional.of(Schema.Resource.HAS_RESOURCE_VALUE.getId(resourceType));
 
         return Sets.newHashSet(EquivalentFragmentSet.create(
-                Fragments.shortcut(hasResource, hasResourceOwner, hasResourceValue, start, resource.getName()),
-                Fragments.shortcut(hasResource, hasResourceValue, hasResourceOwner, resource.getName(), start)
+                Fragments.shortcut(hasResource, hasResourceOwner, hasResourceValue, start, resource.getVarName()),
+                Fragments.shortcut(hasResource, hasResourceValue, hasResourceOwner, resource.getVarName(), start)
         ));
     }
 
@@ -110,14 +110,14 @@ public class HasResourceProperty extends AbstractVarProperty implements NamedPro
                 resource.getProperties(ValueProperty.class).map(ValueProperty::getPredicate).findAny();
 
         resources(concept).stream()
-                .filter(r -> r.type().getId().equals(resourceType))
+                .filter(r -> r.type().getName().equals(resourceType))
                 .filter(r -> predicate.map(p -> p.getPredicate().test(r.getValue())).orElse(true))
                 .forEach(Concept::delete);
     }
 
     @Override
     public Stream<VarAdmin> getTypes() {
-        return Stream.of(id(resourceType).admin());
+        return Stream.of(name(resourceType).admin());
     }
 
     /**

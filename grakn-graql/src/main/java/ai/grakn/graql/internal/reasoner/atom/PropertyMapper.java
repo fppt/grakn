@@ -66,7 +66,7 @@ public class PropertyMapper {
     private static Set<Atomic> map(RelationProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
         Set<RelationPlayer> relationPlayers = prop.getRelationPlayers().collect(Collectors.toSet());
-        Var relVar = var.isUserDefinedName()? Graql.var(var.getName()) : Graql.var();
+        Var relVar = var.isUserDefinedName()? Graql.var(var.getVarName()) : Graql.var();
 
         IsaProperty isaProp = var.getProperty(IsaProperty.class).orElse(null);
         if (isaProp != null) relVar.isa(isaProp.getProperty());
@@ -82,7 +82,7 @@ public class PropertyMapper {
 
     private static Set<Atomic> map(IdProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        String varName = var.getName();
+        String varName = var.getVarName();
         String type = prop.getId();
         if (!type.isEmpty()) {
             VarAdmin idVar = Graql.var(varName).id(type).admin();
@@ -93,17 +93,17 @@ public class PropertyMapper {
 
     private static Set<Atomic> map(ValueProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        VarAdmin valueVar = Graql.var(var.getName()).value(prop.getPredicate()).admin();
+        VarAdmin valueVar = Graql.var(var.getVarName()).value(prop.getPredicate()).admin();
         atoms.add(AtomicFactory.create(valueVar, parent));
         return atoms;
     }
 
     private static Set<Atomic> map(SubProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        String varName = var.getName();
+        String varName = var.getVarName();
         VarAdmin baseVar = prop.getSuperType();
         String valueVariable = baseVar.isUserDefinedName() ?
-                baseVar.getName() : varName + "-sub-" + UUID.randomUUID().toString();
+                baseVar.getVarName() : varName + "-sub-" + UUID.randomUUID().toString();
 
         //id part
         if (!baseVar.isUserDefinedName()) {
@@ -120,10 +120,10 @@ public class PropertyMapper {
 
     private static Set<Atomic> map(PlaysRoleProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        String varName = var.getName();
+        String varName = var.getVarName();
         VarAdmin baseVar = prop.getRole();
         String valueVariable = baseVar.isUserDefinedName() ?
-                baseVar.getName() : varName + "-plays-role-" + UUID.randomUUID().toString();
+                baseVar.getVarName() : varName + "-plays-role-" + UUID.randomUUID().toString();
         //id part
         if (!baseVar.isUserDefinedName()) {
             String type = prop.getRole().getId().orElse("");
@@ -138,7 +138,7 @@ public class PropertyMapper {
 
     private static Set<Atomic> map(HasResourceTypeProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        String varName = var.getName();
+        String varName = var.getVarName();
         String type = prop.getResourceType().getId().orElse("");
         //!!!HasResourceType is a special case and it doesn't allow variables as resource types!!!
 
@@ -153,10 +153,10 @@ public class PropertyMapper {
         //IsaProperty is unique within a var, so skip if this is a relation
         if (var.hasProperty(RelationProperty.class)) return atoms;
 
-        String varName = var.getName();
+        String varName = var.getVarName();
         VarAdmin baseVar = prop.getType();
         String valueVariable = baseVar.isUserDefinedName() ?
-                baseVar.getName() : varName + "-type-" + UUID.randomUUID().toString();
+                baseVar.getVarName() : varName + "-type-" + UUID.randomUUID().toString();
 
         //id part
         if (!baseVar.isUserDefinedName()) {
@@ -172,12 +172,12 @@ public class PropertyMapper {
 
     private static Set<Atomic> map(HasResourceProperty prop, VarAdmin var, Query parent) {
         Set<Atomic> atoms = new HashSet<>();
-        String varName = var.getName();
+        String varName = var.getVarName();
         String type = prop.getType();
 
         VarAdmin baseVar = prop.getResource();
         String valueVariable = baseVar.isUserDefinedName() ?
-                baseVar.getName() : varName + "-" + type + "-" + UUID.randomUUID().toString();
+                baseVar.getVarName() : varName + "-" + type + "-" + UUID.randomUUID().toString();
 
         //add resource atom
         VarAdmin resVar = Graql.var(varName).has(type, Graql.var(valueVariable)).admin();

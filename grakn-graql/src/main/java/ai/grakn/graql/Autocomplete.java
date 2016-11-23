@@ -20,6 +20,7 @@ package ai.grakn.graql;
 
 import ai.grakn.GraknGraph;
 import ai.grakn.concept.Concept;
+import ai.grakn.concept.Type;
 import ai.grakn.graql.internal.antlr.GraqlLexer;
 import ai.grakn.util.Schema;
 import com.google.common.collect.ImmutableSet;
@@ -121,7 +122,7 @@ public class Autocomplete {
      * @return all type IDs in the ontology
      */
     private static Stream<String> getTypes(GraknGraph graph) {
-        Stream<String> types = graph.getMetaType().instances().stream().map(Concept::getId);
+        Stream<String> types = graph.getMetaType().instances().stream().map(Concept::asType).map(Type::getName);
 
         Stream<String> metaTypes = Stream.of(Schema.MetaSchema.values()).map(Schema.MetaSchema::getId);
 

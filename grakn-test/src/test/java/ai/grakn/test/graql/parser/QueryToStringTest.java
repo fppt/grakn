@@ -20,21 +20,18 @@ package ai.grakn.test.graql.parser;
 
 import ai.grakn.concept.ResourceType;
 import ai.grakn.graql.ComputeQuery;
-import ai.grakn.test.AbstractMovieGraphTest;
-import com.google.common.collect.Sets;
-import ai.grakn.concept.ResourceType;
-import ai.grakn.graql.ComputeQuery;
 import ai.grakn.graql.InsertQuery;
 import ai.grakn.graql.MatchQuery;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.test.AbstractMovieGraphTest;
+import com.google.common.collect.Sets;
 import org.junit.Before;
 import org.junit.Test;
 
 import static ai.grakn.graql.Graql.and;
-import static ai.grakn.graql.Graql.id;
 import static ai.grakn.graql.Graql.lte;
 import static ai.grakn.graql.Graql.match;
+import static ai.grakn.graql.Graql.name;
 import static ai.grakn.graql.Graql.neq;
 import static ai.grakn.graql.Graql.or;
 import static ai.grakn.graql.Graql.var;
@@ -133,7 +130,7 @@ public class QueryToStringTest extends AbstractMovieGraphTest {
     public void testQuoteIds() {
         assertEquals(
                 "match $a (\"hello\\tworld\");",
-                match(var("a").rel(id("hello\tworld"))).toString()
+                match(var("a").rel(name("hello\tworld"))).toString()
         );
     }
 
@@ -141,7 +138,7 @@ public class QueryToStringTest extends AbstractMovieGraphTest {
     public void testQuoteIdsNumbers() {
         assertEquals(
                 "match $a (\"1hi\");",
-                match(var("a").rel(id("1hi"))).toString()
+                match(var("a").rel(name("1hi"))).toString()
         );
     }
 
