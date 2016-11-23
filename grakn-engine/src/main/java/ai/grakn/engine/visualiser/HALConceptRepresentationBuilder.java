@@ -100,7 +100,7 @@ public class HALConceptRepresentationBuilder {
             if (var.getProperty(RelationProperty.class).isPresent()) {
                 //collect all the role players in the current var's relations (e.g. 'x' and 'y')
                 final List<String> rolePlayersInVar = var.getProperty(RelationProperty.class).get()
-                        .getRelationPlayers().map(x -> x.getRolePlayer().getName()).collect(Collectors.toList());
+                        .getRelationPlayers().map(x -> x.getRolePlayer().getVarName()).collect(Collectors.toList());
                 //if it is a binary or ternary relation
                 if (rolePlayersInVar.size() > 1) {
                     rolePlayersInVar.forEach(rolePlayer -> {

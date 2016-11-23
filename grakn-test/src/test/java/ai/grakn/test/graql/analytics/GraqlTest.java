@@ -26,7 +26,6 @@ import ai.grakn.concept.RelationType;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.concept.RoleType;
 import ai.grakn.exception.GraknValidationException;
-import ai.grakn.graql.Graql;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.graql.internal.analytics.Analytics;
 import ai.grakn.graql.internal.analytics.GraknVertexProgram;
@@ -48,6 +47,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
+import static ai.grakn.graql.Graql.var;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -135,7 +135,7 @@ public class GraqlTest extends AbstractGraphTest {
 
         correctDegrees.forEach((k, v) -> {
             List<Concept> resources = graph.graql()
-                    .match(Graql.id(k).has(Analytics.degree, Graql.var("x")))
+                    .match(var().id(k).has(Analytics.degree, var("x")))
                     .get("x").collect(Collectors.toList());
             assertEquals(1, resources.size());
             assertEquals(v, resources.get(0).asResource().getValue());

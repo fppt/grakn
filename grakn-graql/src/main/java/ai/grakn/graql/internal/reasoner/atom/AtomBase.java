@@ -34,7 +34,7 @@ public abstract class AtomBase implements Atomic{
 
     public AtomBase(VarAdmin pattern) {
         this.atomPattern = pattern;
-        this.varName = pattern.getName();
+        this.varName = pattern.getVarName();
     }
 
     public AtomBase(VarAdmin pattern, Query par) {
@@ -46,7 +46,7 @@ public abstract class AtomBase implements Atomic{
         if (a.getParentQuery() != null)
             this.parent = a.getParentQuery();
         this.atomPattern = Patterns.mergeVars(Sets.newHashSet(a.atomPattern.asVar()));
-        this.varName = atomPattern.asVar().getName();
+        this.varName = atomPattern.asVar().getVarName();
     }
 
     public abstract Atomic clone();
@@ -78,7 +78,7 @@ public abstract class AtomBase implements Atomic{
 
     private void setVarName(String var){
         varName = var;
-        atomPattern.asVar().setName(var);
+        atomPattern.asVar().setVarName(var);
     }
 
     public void unify(String from, String to) {
