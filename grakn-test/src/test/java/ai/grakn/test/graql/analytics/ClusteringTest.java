@@ -50,7 +50,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static ai.grakn.graql.Graql.id;
 import static ai.grakn.graql.Graql.var;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -189,7 +188,7 @@ public class ClusteringTest extends AbstractGraphTest {
                     .flatMap(Collection::stream)
                     .forEach(id -> {
                         List<Concept> resources = graph.graql()
-                                .match(id(id).has(Analytics.connectedComponent, var("x")))
+                                .match(var().id(id).has(Analytics.connectedComponent, var("x")))
                                 .get("x").collect(Collectors.toList());
                         assertEquals(1, resources.size());
                         assertEquals(finalClusterLabel, resources.get(0).asResource().getValue());
@@ -217,7 +216,7 @@ public class ClusteringTest extends AbstractGraphTest {
                     .flatMap(Collection::stream)
                     .forEach(id -> {
                         List<Concept> resources = graph.graql()
-                                .match(id(id).has(Analytics.connectedComponent, var("x")))
+                                .match(var().id(id).has(Analytics.connectedComponent, var("x")))
                                 .get("x").collect(Collectors.toList());
                         assertEquals(1, resources.size());
                         assertEquals(id, resources.get(0).asResource().getValue());

@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 
 import static ai.grakn.graql.Graql.or;
 import static ai.grakn.graql.Graql.var;
+import static ai.grakn.graql.internal.analytics.CommonOLAP.analyticsElements;
 
 /**
  * OLAP computations that can be applied to a Grakn Graph. The current implementation uses the SparkGraphComputer
@@ -94,12 +95,12 @@ public class Analytics {
         // fetch all the types
         Set<Type> subtypes = subTypeNames.stream().map((name) -> {
             Type type = graph.getType(name);
-            if (type == null) throw new IllegalArgumentException(ErrorMessage.TYPE_NAME_NOT_FOUND.getMessage(name));
+            if (type == null) throw new IllegalArgumentException(ErrorMessage.NAME_NOT_FOUND.getMessage(name));
             return type;
         }).collect(Collectors.toSet());
         Set<Type> statisticsResourceTypes = statisticsResourceTypeNames.stream().map((name) -> {
             Type type = graph.getType(name);
-            if (type == null) throw new IllegalArgumentException(ErrorMessage.TYPE_NAME_NOT_FOUND.getMessage(name));
+            if (type == null) throw new IllegalArgumentException(ErrorMessage.NAME_NOT_FOUND.getMessage(name));
             return type;
         }).collect(Collectors.toSet());
 
@@ -111,8 +112,8 @@ public class Analytics {
         if (subtypes.isEmpty()) {
             graph.getMetaEntityType().instances().forEach(type -> this.subtypeNames.add(type.asType().getName()));
             graph.getMetaResourceType().instances().forEach(type -> this.subtypeNames.add(type.asType().getName()));
-            this.subtypeNames.removeAll(CommonOLAP.analyticsElements);
             graph.getMetaRelationType().instances().forEach(type -> this.subtypeNames.add(type.asType().getName()));
+            this.subtypeNames.removeAll(analyticsElements);
 
 //            // collect meta-types to exclude them as they do not have instances
 //            Set<Concept> excludedTypes = new HashSet<>();
@@ -149,7 +150,6 @@ public class Analytics {
                 t.subTypes().forEach(subtype -> this.statisticsResourceTypeNames.add(subtype.getName()));
             }
         }
-        System.out.println("this.subtypeNames = " + this.subtypeNames);
     }
 
     /**
@@ -371,7 +371,7 @@ public class Analytics {
      */
     public Map<String, Long> connectedComponentsAndPersist() {
         LOGGER.info("ConnectedComponentsVertexProgram is called");
-        if (!Sets.intersection(subtypeNames, CommonOLAP.analyticsElements).isEmpty()) {
+        if (!Sets.intersection(subtypeNames, analyticsElements).isEmpty()) {
             throw new IllegalStateException(ErrorMessage.ILLEGAL_ARGUMENT_EXCEPTION
                     .getMessage(this.getClass().toString()));
         }
@@ -410,7 +410,7 @@ public class Analytics {
      */
     private void degreesAndPersist(String resourceType) {
         LOGGER.info("DegreeVertexProgram is called");
-        if (!Sets.intersection(subtypeNames, CommonOLAP.analyticsElements).isEmpty()) {
+        if (!Sets.intersection(subtypeNames, analyticsElements).isEmpty()) {
             throw new IllegalStateException(ErrorMessage.ILLEGAL_ARGUMENT_EXCEPTION
                     .getMessage(this.getClass().toString()));
         }
@@ -559,7 +559,7 @@ public class Analytics {
         GraknGraph graph = Grakn.factory(Grakn.DEFAULT_URI, this.keySpace).getGraph();
         for (String id : ids) {
             Concept concept = graph.getConcept(id);
-            if (concept == null || !subtypeNames.contains(concept.type().getId())) return false;
+            if (concept == null || !subtypeNames.contains(concept.type().getName())) return false;
         }
         return true;
     }

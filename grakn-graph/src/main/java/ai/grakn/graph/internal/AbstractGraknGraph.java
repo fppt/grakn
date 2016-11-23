@@ -131,12 +131,12 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
             RuleTypeImpl constraintRuleType = elementFactory.buildRuleType(addVertex(Schema.BaseType.RULE_TYPE), ruleType);
             constraintRuleType.setProperty(Schema.ConceptProperty.NAME, Schema.MetaSchema.CONSTRAINT_RULE.getId());
 
-            type.setType(type.getId());
-            relationType.setType(type.getId());
-            roleType.setType(type.getId());
-            resourceType.setType(type.getId());
-            ruleType.setType(type.getId());
-            entityType.setType(type.getId());
+            type.setType(type.getName());
+            relationType.setType(type.getName());
+            roleType.setType(type.getName());
+            resourceType.setType(type.getName());
+            ruleType.setType(type.getName());
+            entityType.setType(type.getName());
 
             relationType.putEdge(type, Schema.EdgeLabel.SUB);
             roleType.putEdge(type, Schema.EdgeLabel.SUB);
@@ -498,19 +498,19 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
 
         if (!exists) {
             EdgeImpl edge = addEdge(fromRolePlayer, toRolePlayer, Schema.EdgeLabel.SHORTCUT);
-            edge.setProperty(Schema.EdgeProperty.RELATION_TYPE_ID, relationType.getId());
+            edge.setProperty(Schema.EdgeProperty.RELATION_TYPE_NAME, relationType.getName());
             edge.setProperty(Schema.EdgeProperty.RELATION_ID, relation.getId());
 
             if (fromRolePlayer.getId() != null)
                 edge.setProperty(Schema.EdgeProperty.FROM_ID, fromRolePlayer.getId());
-            edge.setProperty(Schema.EdgeProperty.FROM_ROLE, fromRole.getId());
+            edge.setProperty(Schema.EdgeProperty.FROM_ROLE_NAME, fromRole.getName());
 
             if (toRolePlayer.getId() != null)
                 edge.setProperty(Schema.EdgeProperty.TO_ID, toRolePlayer.getId());
-            edge.setProperty(Schema.EdgeProperty.TO_ROLE, toRole.getId());
+            edge.setProperty(Schema.EdgeProperty.TO_ROLE_NAME, toRole.getName());
 
-            edge.setProperty(Schema.EdgeProperty.FROM_TYPE, fromRolePlayer.getParentIsa().getId());
-            edge.setProperty(Schema.EdgeProperty.TO_TYPE, toRolePlayer.getParentIsa().getId());
+            edge.setProperty(Schema.EdgeProperty.FROM_TYPE_NAME, fromRolePlayer.getParentIsa().getName());
+            edge.setProperty(Schema.EdgeProperty.TO_TYPE_NAME, toRolePlayer.getParentIsa().getName());
             edge.setProperty(Schema.EdgeProperty.SHORTCUT_HASH, hash);
         }
     }
@@ -522,7 +522,7 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
         String fromRoleValue = fromRole.getId();
         String toIdValue = toRolePlayer.getId();
         String toRoleValue = toRole.getId();
-        Object assertionIdValue = ((ConceptImpl) relation).getBaseIdentifier();
+        String assertionIdValue = relation.getId();
 
         if(relationIdValue != null)
             hash += relationIdValue;
