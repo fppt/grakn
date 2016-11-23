@@ -265,7 +265,7 @@ public class EntityTest extends GraphTestBase{
 
         expectedException.expect(GraphRuntimeException.class);
         expectedException.expectMessage(allOf(
-                containsString(ErrorMessage.HAS_RESOURCE_INVALID.getMessage(entityType.getId(), resourceType.getId()))
+                containsString(ErrorMessage.HAS_RESOURCE_INVALID.getMessage(entityType.getName(), resourceType.getName()))
         ));
 
         entity.hasResource(resource);
