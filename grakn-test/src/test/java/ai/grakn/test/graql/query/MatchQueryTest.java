@@ -19,6 +19,7 @@
 package ai.grakn.test.graql.query;
 
 import ai.grakn.concept.Concept;
+import ai.grakn.concept.Instance;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.graql.MatchQuery;
 import ai.grakn.graql.QueryBuilder;
@@ -580,6 +581,15 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
 
         MatchQuery query = qb.match(var("x").id(castingId));
         assertEquals(0, query.stream().count());
+    }
+
+    @Test
+    public void testLookupResourcesOnId() {
+        Instance godfather = graph.getResource("Godfather", graph.getResourceType("title")).owner();
+        String id = godfather.getId();
+        MatchQuery query = qb.match(var().id(id).has("title", var("x")));
+
+        assertEquals("Godfather", query.get("x").findAny().get().asResource().getValue());
     }
 
     @Test
