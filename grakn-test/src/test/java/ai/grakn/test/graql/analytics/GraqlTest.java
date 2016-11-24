@@ -35,6 +35,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.google.common.collect.Lists;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -116,12 +117,15 @@ public class GraqlTest extends AbstractGraphTest {
         ));
     }
 
+    @Ignore //TODO: Fix this once the race condition has been resolved.
     @Test
     public void testDegreesAndPersist() throws Exception {
         // TODO: Fix on TinkerGraphComputer
         assumeFalse(usingTinker());
 
         addOntologyAndEntities();
+        qb.parse("compute degreesAndPersist;").execute();
+        qb.parse("compute degreesAndPersist;").execute();
         qb.parse("compute degreesAndPersist;").execute();
 
         Map<String, Long> correctDegrees = new HashMap<>();
@@ -133,6 +137,7 @@ public class GraqlTest extends AbstractGraphTest {
         correctDegrees.put(relationId23, 2l);
         correctDegrees.put(relationId24, 2l);
 
+        graph = Grakn.factory(Grakn.DEFAULT_URI, graph.getKeyspace()).getGraph();
         correctDegrees.forEach((k, v) -> {
             List<Concept> resources = graph.graql()
                     .match(var().id(k).has(Analytics.degree, var("x")))
