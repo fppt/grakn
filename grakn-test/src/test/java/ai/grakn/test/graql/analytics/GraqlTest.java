@@ -19,15 +19,11 @@
 package ai.grakn.test.graql.analytics;
 
 import ai.grakn.Grakn;
-import ai.grakn.concept.Concept;
-import ai.grakn.concept.Entity;
-import ai.grakn.concept.EntityType;
-import ai.grakn.concept.RelationType;
-import ai.grakn.concept.ResourceType;
-import ai.grakn.concept.RoleType;
+import ai.grakn.concept.*;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.graql.internal.analytics.Analytics;
+import ai.grakn.graql.internal.analytics.BulkResourceMutate;
 import ai.grakn.graql.internal.analytics.GraknVertexProgram;
 import ai.grakn.test.AbstractGraphTest;
 import ai.grakn.util.Schema;
@@ -38,13 +34,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -82,6 +72,9 @@ public class GraqlTest extends AbstractGraphTest {
 
         Logger logger = (Logger) org.slf4j.LoggerFactory.getLogger(GraknVertexProgram.class);
         logger.setLevel(Level.DEBUG);
+
+        logger = (Logger) org.slf4j.LoggerFactory.getLogger(BulkResourceMutate.class);
+        logger.setLevel(Level.DEBUG);
     }
 
     @Test
@@ -117,15 +110,12 @@ public class GraqlTest extends AbstractGraphTest {
         ));
     }
 
-    @Ignore //TODO: Fix this once the race condition has been resolved.
     @Test
     public void testDegreesAndPersist() throws Exception {
         // TODO: Fix on TinkerGraphComputer
         assumeFalse(usingTinker());
 
         addOntologyAndEntities();
-        qb.parse("compute degreesAndPersist;").execute();
-        qb.parse("compute degreesAndPersist;").execute();
         qb.parse("compute degreesAndPersist;").execute();
 
         Map<String, Long> correctDegrees = new HashMap<>();
@@ -139,11 +129,10 @@ public class GraqlTest extends AbstractGraphTest {
 
         graph = Grakn.factory(Grakn.DEFAULT_URI, graph.getKeyspace()).getGraph();
         correctDegrees.forEach((k, v) -> {
-            List<Concept> resources = graph.graql()
-                    .match(var().id(k).has(Analytics.degree, var("x")))
-                    .get("x").collect(Collectors.toList());
+            Collection<Resource<?>> resources =
+                    graph.getConcept(k).asInstance().resources(graph.getResourceType(Analytics.degree));
             assertEquals(1, resources.size());
-            assertEquals(v, resources.get(0).asResource().getValue());
+            assertEquals(v, resources.iterator().next().getValue());
         });
     }
 
