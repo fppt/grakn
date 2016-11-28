@@ -50,6 +50,8 @@ public class PropertyMapper {
             return map((RelationProperty)prop, var, vars, parent, graph);
         else if (prop instanceof IdProperty)
             return map((IdProperty)prop, var, vars, parent, graph);
+        else if (prop instanceof NameProperty)
+            return map((NameProperty)prop, var, vars, parent, graph);
         else if(prop instanceof ValueProperty)
             return map((ValueProperty)prop, var, vars, parent, graph);
         else if (prop instanceof SubProperty)
@@ -93,12 +95,8 @@ public class PropertyMapper {
                         .id(getTypeId(isaProp.getProperty(), graph)).admin();
                 predicate = new IdPredicate(idVar, parent);
             }
-            else {
-                predicate = vars.stream()
-                        .filter(v -> v.getVarName().equals(typeVariable))
-                        .flatMap(v -> v.getProperties(IdProperty.class).map(vp -> new IdPredicate(v.getVarName(), vp, parent)))
-                        .findFirst().orElse(null);
-            }
+            else
+                predicate = getUserDefinedIdPredicate(typeVariable, vars, parent);
         }
 
         atoms.add(new Relation(relVar.admin(), predicate, parent));
@@ -107,6 +105,10 @@ public class PropertyMapper {
     }
 
     private static Set<Atomic> map(IdProperty prop, VarAdmin var, Set<VarAdmin> vars, Query parent, GraknGraph graph) {
+        return Sets.newHashSet(new IdPredicate(var.getVarName(), prop, parent));
+    }
+
+    private static Set<Atomic> map(NameProperty prop, VarAdmin var, Set<VarAdmin> vars, Query parent, GraknGraph graph) {
         return Sets.newHashSet(new IdPredicate(var.getVarName(), prop, parent));
     }
 
@@ -193,17 +195,20 @@ public class PropertyMapper {
         return atoms;
     }
 
+    private static IdPredicate getUserDefinedIdPredicate(String typeVariable, Set<VarAdmin> vars, Query parent){
+        return  vars.stream()
+                .filter(v -> v.getVarName().equals(typeVariable))
+                .flatMap(v -> v.hasProperty(NameProperty.class)?
+                        v.getProperties(NameProperty.class).map(np -> new IdPredicate(typeVariable, np, parent)) :
+                        v.getProperties(IdProperty.class).map(np -> new IdPredicate(typeVariable, np, parent)))
+                .findFirst().orElse(null);
+    }
+
     private static IdPredicate getIdPredicate(String typeVariable, VarAdmin typeVar, Set<VarAdmin> vars, Query parent, GraknGraph graph){
         IdPredicate predicate = null;
         //look for id predicate among vars
-        if(typeVar.isUserDefinedName()){
-            predicate = vars.stream()
-                    .filter(v -> v.getVarName().equals(typeVariable))
-                    .flatMap(v -> v.hasProperty(NameProperty.class)?
-                            v.getProperties(NameProperty.class).map(np -> new IdPredicate(typeVariable, np, parent)) :
-                            v.getProperties(IdProperty.class).map(np -> new IdPredicate(typeVariable, np, parent)))
-                    .findFirst().orElse(null);
-        }
+        if(typeVar.isUserDefinedName())
+            predicate = getUserDefinedIdPredicate(typeVariable, vars, parent);
         else{
             NameProperty nameProp = typeVar.getProperty(NameProperty.class).orElse(null);
             if (nameProp != null)

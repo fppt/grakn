@@ -264,7 +264,6 @@ public class Relation extends TypeAtom{
             String typeVariable = "rel-" + UUID.randomUUID().toString();
             addPredicate(new IdPredicate(Graql.var(typeVariable).id(typeId).admin()));
             atomPattern = atomPattern.asVar().isa(Graql.var(typeVariable)).admin();
-            System.out.println();
         }
     }
 
