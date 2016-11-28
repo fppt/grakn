@@ -69,7 +69,7 @@ public class Utility {
         roles.forEach(role -> {
             tempVars.remove(var);
             tempRoles.remove(role);
-            roleMap.put(var, role.getId());
+            roleMap.put(var, role.getName());
             if (!tempVars.isEmpty() && !tempRoles.isEmpty())
                 computeRoleCombinations(tempVars, tempRoles, roleMap, roleMaps);
             else {

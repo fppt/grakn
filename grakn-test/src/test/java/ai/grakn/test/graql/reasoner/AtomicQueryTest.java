@@ -87,19 +87,6 @@ public class AtomicQueryTest extends AbstractEngineTest{
     }
 
     @Test
-    @Ignore
-    public void testErrorOnMaterialize(){
-        exception.expect(IllegalStateException.class);
-        String queryString = "match ($x, $y) isa recommendation;";
-        IdPredicate sub = new IdPredicate("x", getConcept("Bob"));
-        AtomicQuery atomicQuery = new AtomicQuery(queryString, graph);
-        AtomicQuery atomicQuery2 = new AtomicQuery(atomicQuery);
-        atomicQuery2.addAtomConstraints(Sets.newHashSet(sub));
-        exception.expectMessage(ErrorMessage.MATERIALIZATION_ERROR.getMessage());
-        atomicQuery.materialise(Sets.newHashSet(new IdPredicate("x", getConcept("Bob"))));
-    }
-
-    @Test
     public void testMaterialize(){
         assert(!qb.<AskQuery>parse("match ($x, $y) isa recommendation;$x has name 'Bob';$y has name 'Colour of Magic'; ask;").execute());
 

@@ -131,6 +131,9 @@ public class AtomicQuery extends Query{
         Atom atom = selectAtoms().iterator().next();
         QueryAnswers insertAnswers = new QueryAnswers();
         if (!getMatchQuery().ask().execute()) {
+            //System.out.println("Materialising:");
+            //getPattern().getPatterns().forEach(System.out::println);
+            //System.out.println();
             InsertQuery insert = Graql.insert(getPattern().getVars()).withGraph(graph);
             Set<Concept> insertedConcepts = insert.stream().collect(Collectors.toSet());
             if (atom.isUserDefinedName()) {
@@ -184,9 +187,9 @@ public class AtomicQuery extends Query{
                 Utility.computeRoleCombinations(rolePlayers , roles, new HashMap<>(), roleMaps);
 
                 queryToMaterialise.removeAtom(relAtom);
-                roleMaps.forEach(map -> {
+                roleMaps.forEach(roleMap -> {
                     Relation relationWithRoles = new Relation(atom.getVarName(), relAtom.getValueVariable(),
-                            map, relAtom.getPredicate(), queryToMaterialise);
+                            roleMap, relAtom.getPredicate(), queryToMaterialise);
                     queryToMaterialise.addAtom(relationWithRoles);
                     insertAnswers.addAll(queryToMaterialise.materialiseComplete());
                     queryToMaterialise.removeAtom(relationWithRoles);
