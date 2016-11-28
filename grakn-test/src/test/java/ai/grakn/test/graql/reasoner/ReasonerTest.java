@@ -132,7 +132,6 @@ public class ReasonerTest extends AbstractEngineTest{
         assertTrue(R.getBody().equals(R2.getBody()));
     }
 
-
     @Test
     public void testIdComma(){
         GraknGraph graph = SNBGraph.getGraph();

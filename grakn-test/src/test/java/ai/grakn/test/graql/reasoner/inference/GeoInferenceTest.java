@@ -56,8 +56,6 @@ public class GeoInferenceTest extends AbstractEngineTest {
 
         QueryAnswers answers = reasoner.resolve(query);
         QueryAnswers explicitAnswers = new QueryAnswers(qb.<MatchQuery>parse(explicitQuery).execute());
-        printAnswers(answers);
-        printAnswers(explicitAnswers);
         assertEquals(answers, explicitAnswers);
         assertQueriesEqual(reasoner.resolveToQuery(query), qb.parse(explicitQuery));
     }
