@@ -1,41 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <!--
-  ~ MindmapsDB - A Distributed Semantic Database
-  ~ Copyright (C) 2016  Mindmaps Research Ltd
+  ~ Grakn - A Distributed Semantic Database
+  ~ Copyright (C) 2016  Grakn Labs Limited
   ~
-  ~ MindmapsDB is free software: you can redistribute it and/or modify
+  ~ Grakn is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
   ~
-  ~ MindmapsDB is distributed in the hope that it will be useful,
+  ~ Grakn is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
   ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   ~ GNU General Public License for more details.
   ~
   ~ You should have received a copy of the GNU General Public License
-  ~ along with MindmapsDB. If not, see <http://www.gnu.org/licenses/gpl.txt>.
+  ~ along with Grakn. If not, see <http://www.gnu.org/licenses/gpl.txt>.
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>io.mindmaps</groupId>
-    <artifactId>mindmaps</artifactId>
+    <groupId>ai.grakn</groupId>
+    <artifactId>grakn</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.0-SNAPSHOT</version>
-    <name>MindmapsDB</name>
+    <version>0.8.0-SNAPSHOT</version>
+    <name>Grakn</name>
     <description>A distributed semantic graph database.</description>
-    <url>http://mindmaps.io/platform.html</url>    
+    <url>https://grakn.ai/pages/platform/index.html</url>
     <modules>
-        <module>mindmaps-core</module>
-        <module>mindmaps-titan-factory</module>
-        <module>mindmaps-graql</module>
-        <module>mindmaps-graql-shell</module>
-        <module>mindmaps-engine</module>
-        <module>mindmaps-dist</module>
-        <module>mindmaps-base</module>
+        <module>grakn-graph</module>
+        <module>grakn-titan-factory</module>
+        <module>grakn-graql</module>
+        <module>grakn-graql-shell</module>
+        <module>grakn-engine</module>
+        <module>grakn-dashboard</module>
+        <module>grakn-migration</module>
+        <module>grakn-dist</module>
+        <module>grakn-test</module>
+        <module>grakn-core</module>
+        <module>grakn-orientdb-factory</module>
     </modules>
 
     <properties>
@@ -47,7 +52,9 @@
         <antlr.version>4.5</antlr.version>
         <jline.version>2.12</jline.version>
         <commons-cli.version>1.3</commons-cli.version>
-        <spark-core.version>2.5</spark-core.version>
+        <spark-core.version>2.5.1</spark-core.version>
+        <commons-collections.version>3.2.1</commons-collections.version>
+        <commons-csv.version>1.3</commons-csv.version>
         <json.version>20160212</json.version>
         <halbuilder-standard.version>4.0.1</halbuilder-standard.version>
         <rest-assured.version>2.7.0</rest-assured.version>
@@ -55,9 +62,28 @@
         <spark.version>1.5.2</spark.version>
         <jinjava.version>2.1.0</jinjava.version>
         <airline.version>0.6</airline.version>
-
         <antlr4.visitor>true</antlr4.visitor>
+        <swagger.version>1.5.8</swagger.version>
+        <websocket.version>1.1</websocket.version>
+        <jetty.version>9.3.6.v20151106</jetty.version>
+        <mjson.version>1.4.0</mjson.version>
+        <orientdb.version>3.2.1.2</orientdb.version>
+        <orientdb-gremlin-core.version>3.2.1</orientdb-gremlin-core.version>
+        <logback.version>1.1.7</logback.version>
+        <junit.version>4.11</junit.version>
+        <csv.version>3.8</csv.version>
+        <jool.version>3.8.5</jool.version>
+        <cassandra-unit.version>2.1.9.2</cassandra-unit.version>
+        <h2-database.version>1.4.192</h2-database.version>
+        <hermit.version>1.3.8.500</hermit.version>
+        <owl-api.version>5.0.2</owl-api.version>
+        <systen-rules.version>1.16.0</systen-rules.version>
     </properties>
+
+    <organization>
+      <name>Grakn Labs Ltd</name>
+      <url>https://grakn.ai</url>
+    </organization>
 
     <licenses>
         <license>
@@ -68,59 +94,71 @@
 
     <developers>
         <developer>
+            <name>Haikal Pribadi</name>
+            <email>haikal@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
+        </developer>
+        <developer>
+            <name>Borislav Iordanov</name>
+            <email>borislav@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
+        </developer>
+        <developer>
             <name>Filipe Teixeira</name>
-            <email>filipe@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>filipe@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Felix Chapman</name>
-            <email>felix@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>felix@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Sheldon Hall</name>
-            <email>sheldon@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>sheldon@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Alexandra Orth</name>
-            <email>alexandra@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>alexandra@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Jason Liu</name>
-            <email>jason@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>jason@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Marco Scoppetta</name>
-            <email>marco@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>marco@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
             <name>Kasper Piskorski</name>
-            <email>kasper@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <email>kasper@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
         <developer>
-            <name>Denis Lobanov</name>
-            <email>denis@mindmaps.io</email>
-            <organization>Mindmaps Research Ltd</organization>
-            <organizationUrl>http://mindmaps.io</organizationUrl>
+            <name>Denis Igorevich Lobanov</name>
+            <email>denis@grakn.ai</email>
+            <organization>Grakn Labs</organization>
+            <organizationUrl>http://grakn.ai</organizationUrl>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/mindmapsdb/mindmapsdb.git</connection>
-        <developerConnection>scm:git:ssh://github.com:mindmapsdb/mindmapsdb.git</developerConnection>
-        <url>https://github.com/mindmapsdb/mindmapsdb/tree/master</url>
+        <connection>scm:git:git://github.com/graknlabs/grakn.git</connection>
+        <developerConnection>scm:git:ssh://github.com:graknlabs/grakn.git</developerConnection>
+        <url>https://github.com/graknlabs/grakn/tree/master</url>
     </scm>
 
     <dependencies>
@@ -132,20 +170,6 @@
         </dependency>
     </dependencies>
 
-<!--
-    <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <name>Internal Releases</name>
-            <url>http://maven.internal.mindmaps.io:8082/nexus/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>development-snapshots</id>
-            <name>snapshots</name>
-            <url>http://maven.internal.mindmaps.io:8082/nexus/content/repositories/development-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
--->
     <distributionManagement>
       <snapshotRepository>
         <id>ossrh</id>
@@ -157,23 +181,10 @@
       </repository>
     </distributionManagement>
     <repositories>
-        <!-- Internal mirror of all public repositories -->
-        <repository>
-            <id>public</id>
-            <url>http://maven.internal.mindmaps.io:8082/nexus/content/groups/public</url>
-        </repository>
-
-        <!-- Internal snapshot repository -->
+        <!--Snapshot repository for 3rd party libraries -->
         <repository>
             <id>development-snapshots</id>
-            <url>http://maven.internal.mindmaps.io:8082/nexus/content/repositories/development-snapshots</url>
-        </repository>
-
-        <!-- Internal release repository -->
-        <repository>
-            <id>releases</id>
-            <name>Internal Releases</name>
-            <url>http://maven.internal.mindmaps.io:8082/nexus/content/repositories/releases/</url>
+            <url>https://maven.grakn.ai/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -200,6 +211,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <excludes>
+                        <exclude>**/antlr/**</exclude>
+                    </excludes>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -229,12 +245,20 @@
                 <version>2.9.1</version>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
+                    <header><![CDATA[<a href="https://grakn.ai" target="_top">Grakn</a>]]></header>
+                    <bottom><![CDATA[Copyright &#169; {currentYear} <a href="https://grakn.ai" target="_top">Grakn Labs Ltd</a>. All rights reserved.]]></bottom>
                 </configuration>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
                         <goals>
                             <goal>jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>attach-aggregate-javadocs</id>
+                        <goals>
+                            <goal>aggregate-jar</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -249,6 +273,18 @@
                 <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                 <autoReleaseAfterClose>true</autoReleaseAfterClose>
               </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

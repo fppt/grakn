@@ -1,0 +1,58 @@
+insert
+
+###################################################
+####################Ontology######################
+#################################################
+
+"entity" isa entity-type
+    has-resource index;
+"a-entity" sub entity;
+"b-entity" sub entity;
+"S" sub entity;
+
+"R-rA" isa role-type;
+"R-rB" isa role-type;
+"R" isa relation-type, has-role R-rA, has-role R-rB;
+entity plays-role R-rA plays-role R-rB;
+
+"N-rA" isa role-type;
+"N-rB" isa role-type;
+"N" isa relation-type, has-role N-rA, has-role N-rB;
+entity plays-role N-rA plays-role N-rB;
+
+"Q-rA" isa role-type;
+"Q-rB" isa role-type;
+"Q" isa relation-type, has-role Q-rA, has-role Q-rB;
+entity plays-role Q-rA plays-role Q-rB;
+
+"P-rA" isa role-type;
+"P-rB" isa role-type;
+"P" isa relation-type, has-role P-rA, has-role P-rB;
+entity plays-role P-rA plays-role P-rB;
+
+"index" isa resource-type, datatype string;
+
+####################################################
+##################RULES#############################
+####################################################
+
+isa inference-rule,
+lhs {
+(R-rA: $x, R-rB: $y) isa R;},
+rhs {
+(N-rA: $x, N-rB: $y) isa N;};
+
+isa inference-rule,
+lhs {
+(P-rA: $x, P-rB: $z) isa P;
+(N-rA: $z, N-rB: $w) isa N;
+(Q-rA: $w, Q-rB: $y) isa Q;},
+rhs {
+(N-rA: $x, N-rB: $y) isa N;};
+
+isa inference-rule,
+lhs {
+(N-rA: $x, N-rB: $y) isa N;
+$x has index 'c';},
+rhs {
+$y isa S;};

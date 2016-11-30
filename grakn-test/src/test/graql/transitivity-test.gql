@@ -1,0 +1,93 @@
+insert
+
+#######################################################
+########################ONTOLOGY######################
+#######################################################
+
+"entity" isa entity-type
+    has-resource index;
+
+"R-role-A" isa role-type;
+"R-role-B" isa role-type;
+"R" isa relation-type, has-role R-role-A, has-role R-role-B;
+entity plays-role R-role-A, plays-role R-role-B;
+
+"E-role-A" isa role-type;
+"E-role-B" isa role-type;
+"E" isa relation-type, has-role E-role-A, has-role E-role-B;
+entity plays-role E-role-A, plays-role E-role-B;
+
+"F-role-A" isa role-type;
+"F-role-B" isa role-type;
+"F" isa relation-type, has-role F-role-A, has-role F-role-B;
+entity plays-role F-role-A, plays-role F-role-B;
+
+"G-role-A" isa role-type;
+"G-role-B" isa role-type;
+"G" isa relation-type, has-role G-role-A, has-role G-role-B;
+entity plays-role G-role-A, plays-role G-role-B;
+
+"H-role-A" isa role-type;
+"H-role-B" isa role-type;
+"H" isa relation-type, has-role H-role-A, has-role H-role-B;
+entity plays-role H-role-A, plays-role H-role-B;
+
+"index" isa resource-type, datatype string;
+
+#######################################################
+######################DATA########################
+#######################################################
+
+$i isa entity, has index "i";
+$j isa entity, has index "j";
+$k isa entity, has index "k";
+$l isa entity, has index "l";
+$m isa entity, has index "m";
+$n isa entity, has index "n";
+$o isa entity, has index "o";
+$p isa entity, has index "p";
+$q isa entity, has index "q";
+$r isa entity, has index "r";
+$s isa entity, has index "s";
+$t isa entity, has index "t";
+$u isa entity, has index "u";
+$v isa entity, has index "v";
+
+(E-role-A: $i, E-role-B: $j) isa E;
+(E-role-A: $l, E-role-B: $m) isa E;
+(E-role-A: $n, E-role-B: $o) isa E;
+(E-role-A: $q, E-role-B: $r) isa E;
+(E-role-A: $t, E-role-B: $u) isa E;
+
+(F-role-A: $i, F-role-B: $i) isa F;
+(F-role-A: $i, F-role-B: $k) isa F;
+(F-role-A: $k, F-role-B: $l) isa F;
+
+(G-role-A: $m, G-role-B: $n) isa G;
+(G-role-A: $p, G-role-B: $q) isa G;
+(G-role-A: $s, G-role-B: $t) isa G;
+
+(H-role-A: $o, H-role-B: $p) isa H;
+(H-role-A: $r, H-role-B: $s) isa H;
+(H-role-A: $u, H-role-B: $v) isa H;
+
+################################################################
+################################RULES#################################
+################################################################
+
+isa inference-rule,
+lhs {
+(E-role-A: $x, E-role-B: $y) isa E;},
+rhs {
+(R-role-A: $x, R-role-B: $y) isa R;};
+
+isa inference-rule,
+lhs {
+(F-role-A: $x, F-role-B: $t) isa F;
+(R-role-A: $t, R-role-B: $u) isa R;
+(G-role-A: $u, G-role-B: $v) isa G;
+(R-role-A: $v, R-role-B: $w) isa R;
+(H-role-A: $w, H-role-B: $y) isa H;},
+rhs {
+(R-role-A: $x, R-role-B: $y) isa R;};
+

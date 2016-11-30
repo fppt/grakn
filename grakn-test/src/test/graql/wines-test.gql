@@ -1,0 +1,133 @@
+insert
+
+#######################################################
+########################ONTOLOGY######################
+#######################################################
+
+"context-preference-owner" isa role-type;
+"context-preference-id" isa role-type;
+"context-preference" isa relation-type, has-role context-preference-owner, has-role context-preference-id;
+
+"preferred-context" isa resource-type, datatype string;
+
+"body-preference-owner" isa role-type;
+"body-preference-id" isa role-type;
+"body-preference" isa relation-type, has-role body-preference-owner, has-role body-preference-id;
+
+"preferred-body" isa resource-type, datatype string;
+
+"dryness-preference-owner" isa role-type;
+"dryness-preference-id" isa role-type;
+"dryness-preference" isa relation-type, has-role dryness-preference-owner, has-role dryness-preference-id;
+
+"preferred-dryness" isa resource-type, datatype string;
+
+"entree-preference-owner" isa role-type;
+"entree-preference-id" isa role-type;
+"entree-preference" isa relation-type, has-role entree-preference-owner, has-role entree-preference-id;
+
+"preferred-entree" isa resource-type, datatype string;
+
+"colour-preference-owner" isa role-type;
+"colour-preference-id" isa role-type;
+"colour-preference" isa relation-type, has-role colour-preference-owner, has-role colour-preference-id;
+
+"preferred-colour" isa resource-type, datatype string;
+
+"sparklingness-preference-owner" isa role-type;
+"sparklingness-preference-id" isa role-type;
+"sparkingness-preference" isa relation-type, has-role sparklingness-preference-owner, has-role sparklingness-preference-id;
+
+"preferred-sparklingness" isa resource-type, datatype string;
+
+"recommended-wine" isa role-type;
+"recommendation-owner" isa role-type;
+"wine-recommendation" isa relation-type, has-role recommended-wine, has-role recommendation-owner;
+
+"recommended-generic-wine-type" isa resource-type, datatype string;
+
+"person" isa entity-type
+    has-resource name;
+person plays-role recommendation-owner;
+person has-resource preferred-context;
+person has-resource preferred-body;
+person has-resource preferred-dryness;
+person has-resource preferred-entree;
+person has-resource preferred-colour;
+person has-resource preferred-sparklingness;
+person has-resource recommended-generic-wine-type;
+
+"name" isa resource-type, datatype string;
+
+"wine" isa entity-type
+    has-resource name;
+wine plays-role recommended-wine;
+
+#######################################################
+######################DATA########################
+#######################################################
+
+#recommend Cabernet Sauvignion
+$Alice isa person, has name "Alice";
+$Alice has preferred-context "aperitif";
+$Alice has preferred-sparklingness "non-sparkling";
+$Alice has preferred-body "full";
+$Alice has preferred-colour "red";
+
+#recommend White Champagne
+$Bob isa person, has name "Bob";
+$Bob has preferred-context "aperitif";
+$Bob has preferred-sparklingness "sparkling";
+$Bob has preferred-body "full";
+$Bob has preferred-colour "white";
+
+#recommend Pinot Grigio
+$Charlie isa person, has name "Charlie";
+$Charlie has preferred-context "entree";
+$Charlie has preferred-entree "white meat";
+$Charlie has preferred-colour "rose";
+
+#recommend Busuioaca Romaneasca
+$Denis isa person, has name "Denis";
+$Denis has preferred-context "entree";
+$Denis has preferred-entree "steak";
+$Denis has preferred-colour "rose";
+
+#recommend Tamaioasa Romaneasca
+$Eva isa person, has name "Eva";
+$Eva has preferred-context "aperitif";
+$Eva has preferred-body "full";
+$Eva has preferred-sparklingness "non-sparkling";
+$Eva has preferred-colour "white";
+
+#recommend Riojo Blanco
+$Frank isa person, has name "Frank";
+$Frank has preferred-context "entree";
+$Frank has preferred-entree "barbecue";
+$Frank has preferred-body "full";
+$Frank has preferred-sparklingness "non-sparkling";
+$Frank has preferred-colour "white";
+
+#wines
+$white-champagne isa wine, has name "White Champagne";
+$cabernet-sauvignion isa wine, has name "Cabernet Sauvignion";
+$tamaioasa-romaneasca isa wine, has name "Tamaioasa Romaneasca";
+$busuioaca-romaneasca isa wine, has name "Busuioaca Romaneasca";
+$pinot-noir isa wine, has name "Pinot Noir";
+$muscat-sec isa wine, has name "Muscat Sec";
+$pinot-grigio-rose isa wine, has name "Pinot Grigio Rose";
+$corbieres isa wine, has name "Corbieres 2003";
+$chateu isa wine, has name "Chateau Agnel 2000";
+$rosso isa wine, has name "Rosso di Sicilia 2004";
+$riojo-blanco isa wine, has name "Riojo Blanco CVNE 2003";
+$tamaioasa-regala isa wine, has name "Tamaioasa Regala";
+$riojo-tempranillo isa wine, has name "Riojo Tempranillo";
+$chianti isa wine, has name "Chianti";
+$white-riesling isa wine, has name "White Riesling";
+$burgundy isa wine, has name "Burgundy";
+$chardonnay isa wine, has name "Chardonnay";
+$bordeaux isa wine, has name "Bordeaux Blanc";
+$feteasca-regala isa wine, has name "Feteasca Regala";
+$feteasca-roz isa wine, has name "Feteasca Roz";
+$feteasca-neagra isa wine, has name "Feteasca Neagra";
+$sauvignion-blanc isa wine, has name "Sauvignion Blanc";

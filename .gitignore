@@ -1,9 +1,10 @@
 # Mac files #
 .DS_Store
 
-# IntelliJ files #
+# IDE files #
 .idea/
 *.iml
+*.geany
 
 # Compiled files #
 out/
@@ -27,4 +28,11 @@ db/
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# junk files #
+# Log files #
+logs/
+
+# Analytics files #
+grakn-test/db/
+grakn-test/output/
+grakn-test/*.txt
+grakn-test/output/

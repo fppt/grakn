@@ -1,0 +1,89 @@
+insert
+
+###################################################
+####################Ontology######################
+#################################################
+
+"entity" isa entity-type
+    has-resource index;
+"start" sub entity;
+"end" sub entity;
+"a-entity" sub entity;
+"b-entity" sub entity;
+
+"R1-from" isa role-type;
+"R1-to" isa role-type;
+"R1" isa relation-type, has-role R1-from, has-role R1-to;
+entity plays-role R1-from plays-role R1-to;
+
+"R2-from" isa role-type;
+"R2-to" isa role-type;
+"R2" isa relation-type, has-role R2-from, has-role R2-to;
+entity plays-role R2-from plays-role R2-to;
+
+"Q1-from" isa role-type;
+"Q1-to" isa role-type;
+"Q1" isa relation-type, has-role Q1-from, has-role Q1-to;
+entity plays-role Q1-from plays-role Q1-to;
+
+"Q2-from" isa role-type;
+"Q2-to" isa role-type;
+"Q2" isa relation-type, has-role Q2-from, has-role Q2-to;
+entity plays-role Q2-from plays-role Q2-to;
+
+"P-from" isa role-type;
+"P-to" isa role-type;
+"P" isa relation-type, has-role P-from, has-role P-to;
+entity plays-role P-from plays-role P-to;
+
+"index" isa resource-type, datatype string;
+
+####################################################
+##################DATA#############################
+####################################################
+
+$c isa entity, has index "c";
+$d isa entity, has index "d";
+$e isa entity, has index "e";
+
+####################################################
+##################RULES#############################
+####################################################
+
+isa inference-rule,
+lhs {
+(R1-from: $x, R1-to: $y) isa R1;},
+rhs {
+(Q1-from: $x, Q1-to: $y) isa Q1;};
+
+isa inference-rule,
+lhs {
+(R1-from: $x, R1-to: $z) isa R1;
+(Q1-from: $z, Q1-to: $y) isa Q1;},
+rhs {
+(Q1-from: $x, Q1-to: $y) isa Q1;};
+
+isa inference-rule,
+lhs {
+(R2-from: $x, R2-to: $y) isa R2;},
+rhs {
+(Q2-from: $x, Q2-to: $y) isa Q2;};
+
+isa inference-rule,
+lhs {
+(R2-from: $x, R2-to: $z) isa R2;
+(Q2-from: $z, Q2-to: $y) isa Q2;},
+rhs {
+(Q2-from: $x, Q2-to: $y) isa Q2;};
+
+isa inference-rule,
+lhs {
+(Q1-from: $x, Q1-to: $y) isa Q1;},
+rhs {
+(P-from: $x, P-to: $y) isa P;};
+
+isa inference-rule,
+lhs {
+(Q1-from: $x, Q1-to: $y) isa Q6;},
+rhs {
+(P-from: $x, P-to: $y) isa P;};

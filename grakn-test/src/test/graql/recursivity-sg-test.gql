@@ -1,0 +1,64 @@
+insert
+
+###################################################
+####################Ontology######################
+#################################################
+
+"entity" isa entity-type
+    has-resource name;
+"Human" sub entity;
+
+"parent" isa role-type;
+"child" isa role-type;
+"Parent" isa relation-type, has-role parent, has-role child;
+entity plays-role parent, plays-role child;
+
+"SG-role-A" isa role-type;
+"SG-role-B" isa role-type;
+"SameGen" isa relation-type, has-role SG-role-A, has-role SG-role-B;
+entity plays-role SG-role-A, plays-role SG-role-B;
+
+"name" isa resource-type, datatype string;
+
+####################################################
+##################DATA#############################
+####################################################
+
+$a isa entity, has name "a";
+$b isa entity, has name "b";
+$c isa entity, has name "c";
+$d isa Human, has name "d";
+$e isa entity, has name "e";
+$f isa entity, has name "f";
+$g isa entity, has name "g";
+$h isa entity, has name "h";
+
+(parent: $a, child: $b) isa Parent;
+(parent: $a, child: $c) isa Parent;
+(parent: $b, child: $d) isa Parent;
+(parent: $c, child: $d) isa Parent;
+(parent: $e, child: $d) isa Parent;
+(parent: $f, child: $e) isa Parent;
+
+#Extra data
+(parent: $g, child: $f) isa Parent;
+(parent: $h, child: $g) isa Parent;
+
+####################################################
+##################RULES#############################
+####################################################
+
+isa inference-rule,
+lhs {
+$x isa Human;},
+rhs {
+($x, $x) isa SameGen;};
+
+isa inference-rule,
+lhs {
+(parent: $x, child: $u) isa Parent;
+($u, $v) isa SameGen;
+(parent: $y, child: $v) isa Parent;},
+rhs {
+($x, $y) isa SameGen;};
+
