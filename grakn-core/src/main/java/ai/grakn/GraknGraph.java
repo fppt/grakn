@@ -109,15 +109,6 @@ public interface GraknGraph extends AutoCloseable{
 
     /**
      *
-     * @param <V> The data type of the value. Supported types include: String, Long, Double, and Boolean.
-     * @param value A value which a Resource in the graph may be holding.
-     * @param type The resource type of this resource.
-     * @return The Resource with the provided value and type or null if no such Resource exists.
-     */
-    <V> Resource<V> getResource(V value, ResourceType<V> type);
-
-    /**
-     *
      * @param value A value which a Resource in the graph may be holding.
      * @param <V> The data type of the value. Supported types include: String, Long, Double, and Boolean.
      * @return The Resources holding the provided value or an empty collection if no such Resource exists.
@@ -218,6 +209,18 @@ public interface GraknGraph extends AutoCloseable{
     Relation getRelation(RelationType relationType, Map<RoleType, Instance> roleMap);
 
     //------------------------------------- Utilities ----------------------------------
+    /**
+     *
+     * @param flag Specifies if implicit and system generated types should be returned.
+     */
+    void showImplicitConcepts(boolean flag);
+
+    /**
+     *
+     * @return true if implicit structures are exposed.
+     */
+    boolean implicitConceptsVisible();
+
     /**
      * Closes and clears the current graph.
      */

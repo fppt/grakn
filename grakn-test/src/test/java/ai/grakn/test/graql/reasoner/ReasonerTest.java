@@ -20,6 +20,7 @@ package ai.grakn.test.graql.reasoner;
 
 import ai.grakn.GraknGraph;
 import ai.grakn.graql.Pattern;
+import ai.grakn.graql.admin.PatternAdmin;
 import ai.grakn.graql.internal.reasoner.Utility;
 import ai.grakn.graql.internal.reasoner.query.QueryAnswers;
 import ai.grakn.graql.internal.reasoner.rule.InferenceRule;
@@ -471,20 +472,23 @@ public class ReasonerTest extends AbstractEngineTest{
         assertEquals(reasoner.resolve(new Query(queryString, graph)), Sets.newHashSet(qb.<MatchQuery>parse(explicitQuery)));
     }
 
-    @Test
     @Ignore
+    @Test
     //Bug with unification, perhaps should unify select vars not atom vars
     public void testVarContraction3(){
         GraknGraph graph = SNBGraph.getGraph();
-        Pattern body = graph.graql().parsePattern("$x isa person;");
-        Pattern head = graph.graql().parsePattern("($x, $x) isa knows;");
+        Pattern body = graph.graql().parsePattern("$x isa person");
+        Pattern head = graph.graql().parsePattern("($x, $x) isa knows");
         graph.getMetaRuleInference().addRule(body, head);
 
-        String queryString = "match ($x, $y) isa knows;$x has name 'Bob';select $y;";
+        String queryString = "match ($x, $y) isa knows;$x has name 'Bob';";
         String explicitQuery = "match $y isa person;$y has name 'Bob' or $y has name 'Charlie';";
         QueryBuilder qb = graph.graql();
         Reasoner reasoner = new Reasoner(graph);
-        assertEquals(reasoner.resolve(new Query(queryString, graph)), Sets.newHashSet(qb.<MatchQuery>parse(explicitQuery)));
+        Query query = new Query(queryString, graph);
+        QueryAnswers answers = reasoner.resolve(query);
+        printAnswers(answers);
+        //assertEquals(reasoner.resolve(new Query(queryString, graph)), Sets.newHashSet(qb.<MatchQuery>parse(explicitQuery)));
     }
 
     @Test
@@ -640,6 +644,61 @@ public class ReasonerTest extends AbstractEngineTest{
         QueryAnswers answers = new QueryAnswers(query.execute());
         QueryAnswers expAnswers= new QueryAnswers(Sets.newHashSet(lgraph.graql().<MatchQuery>parse(queryString)));
         assertEquals(answers, expAnswers);
+    }
+
+    @Test
+    public void testHasRole() {
+        GraknGraph lgraph = GeoGraph.getGraph();
+        String queryString = "match ($x, $y) isa $rel-type;$rel-type has-role geo-entity;" +
+                "$y isa country;$y has name 'Poland';select $x;";
+        String queryString2 = "match $y isa country;" +
+                "($x, $y) isa is-located-in;$y has name 'Poland'; select $x;";
+        MatchQuery query = new Query(queryString, lgraph);
+        MatchQuery query2 = new Query(queryString2, lgraph);
+        Reasoner reasoner = new Reasoner(lgraph);
+        assertEquals(reasoner.resolve(query), reasoner.resolve(query2));
+    }
+
+    @Test
+    public void testScope(){
+        GraknGraph lgraph = SNBGraph.getGraph();
+        String queryString = "match $r ($p, $pr) isa recommendation;$r has-scope $s;";
+        Reasoner reasoner = new Reasoner(lgraph);
+        Query query = new Query(queryString, lgraph);
+    }
+    
+    @Test
+    public void testResourceComparison(){
+        GraknGraph lgraph = SNBGraph.getGraph();
+        //recommendations of products for people older than Denis - Frank, Karl and Gary
+        String queryString = "match $b has name 'Denis', has age $x; $p has name $name, has age $y; $y value > $x;"+
+                "$pr isa product;($p, $pr) isa recommendation;select $p, $y, $pr, $name;";
+        String explicitQuery = "match $p isa person, has age $y, has name $name;$pr isa product, has name $yName;" +
+                "{$name value 'Frank';$yName value 'Nocturnes';} or" +
+                "{$name value 'Karl Fischer';{$yName value 'Faust';} or {$yName value 'Nocturnes';};} or " +
+                "{$name value 'Gary';$yName value 'The Wall';};select $p, $pr, $y, $name;";
+        Reasoner reasoner = new Reasoner(lgraph);
+        Query query = new Query(queryString, lgraph);
+        QueryAnswers answers = reasoner.resolve(query);
+        QueryAnswers answers2 = new QueryAnswers(Sets.newHashSet(lgraph.graql().<MatchQuery>parse(explicitQuery)));
+        assertEquals(answers, answers2);
+    }
+
+    @Test
+    public void testResourceComparison2(){
+        GraknGraph lgraph = SNBGraph.getGraph();
+        String queryString = "match $p has name $name, has age $x;$p2 has name 'Denis', has age $y;$x value < $y;" +
+                "$t isa tag;($p, $t) isa recommendation; select $p, $name, $x, $t;";
+        String explicitQuery = "match " +
+                "$p isa person, has age $x, has name $name;$t isa tag, has name $yName;" +
+                "{$name value 'Charlie';" +
+                "{$yName value 'Yngwie Malmsteen';} or {$yName value 'Cacophony';} or" +
+                "{$yName value 'Steve Vai';} or {$yName value 'Black Sabbath';};};select $p, $name, $x, $t;";
+        Query query = new Query(queryString, lgraph);
+        Reasoner reasoner = new Reasoner(lgraph);
+        QueryAnswers answers = reasoner.resolve(query);
+        QueryAnswers answers2 = new QueryAnswers(Sets.newHashSet(lgraph.graql().<MatchQuery>parse(explicitQuery)));
+        assertEquals(answers, answers2);
     }
 }
 

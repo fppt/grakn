@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * A Type represents any ontological element in the graph. For example Entity Types and Rule Types.
@@ -69,7 +70,17 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
      */
     @Override
     public Collection<RoleType> playsRoles() {
-        return getOutgoingNeighbours(Schema.EdgeLabel.PLAYS_ROLE);
+        return filterImplicitStructures(getOutgoingNeighbours(Schema.EdgeLabel.PLAYS_ROLE));
+    }
+
+    private <X extends Concept> Set<X> filterImplicitStructures(Set<X> types){
+        if(!getGraknGraph().implicitConceptsVisible()){
+            if(!types.isEmpty() && types.iterator().next().isType()) {
+                return types.stream().filter(t -> !t.asType().isImplicit()).collect(Collectors.toSet());
+            }
+        }
+
+        return types;
     }
 
     /**
@@ -92,7 +103,7 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
      *
      * @return All outgoing sub parents including itself
      */
-    Set<T> getSubHierarchySuperSet() {
+    Set<T> getSuperSet() {
         Set<T> superSet= new HashSet<>();
         superSet.add(getThis());
         T subParent = superType();
@@ -133,7 +144,7 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
      */
     @Override
     public Collection<T> subTypes(){
-        return nextSubLevel(this);
+        return filterImplicitStructures(nextSubLevel(this));
     }
 
     /**
@@ -164,12 +175,12 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
 
         traversal.forEachRemaining(vertex -> {
             ConceptImpl<Concept, Type> concept = getGraknGraph().getElementFactory().buildUnknownConcept(vertex);
-            if(!Schema.BaseType.CASTING.name().equals(concept.getBaseType())){
+            if(!concept.isCasting()){
                 instances.add((V) concept);
             }
         });
 
-        return instances;
+        return filterImplicitStructures(instances);
     }
 
     /**
@@ -232,10 +243,13 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
             });
         }
 
-        deleteEdges(Direction.OUT, Schema.EdgeLabel.SUB);
-        deleteEdges(Direction.OUT, Schema.EdgeLabel.ISA);
-        putEdge(type, Schema.EdgeLabel.SUB);
-        type(); //Check if there is a circular sub loop
+        if(currentSuperType == null || !currentSuperType.equals(type)) {
+            deleteEdges(Direction.OUT, Schema.EdgeLabel.SUB);
+            deleteEdges(Direction.OUT, Schema.EdgeLabel.ISA);
+            putEdge(type, Schema.EdgeLabel.SUB);
+            type(); //Check if there is a circular sub loop
+        }
+        
         return getThis();
     }
 
@@ -321,17 +335,31 @@ class TypeImpl<T extends Type, V extends Concept> extends ConceptImpl<T, Type> i
      * @return The resulting relation type which allows instances of this type to have relations with the provided resourceType.
      */
     public RelationType hasResource(ResourceType resourceType, boolean required){
-        String resourceTypeId = resourceType.getName();
-        RoleType ownerRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceTypeId));
-        RoleType valueRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceTypeId));
+        String resourceTypeName = resourceType.getName();
+        RoleType ownerRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceTypeName));
+        RoleType valueRole = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceTypeName));
+        RelationType relationType = getGraknGraph().putRelationTypeImplicit(Schema.Resource.HAS_RESOURCE.getName(resourceTypeName)).
+                hasRole(ownerRole).
+                hasRole(valueRole);
+
+        //Linking with ako structure if present
+        ResourceType resourceTypeSuper = resourceType.superType();
+        if(resourceTypeSuper != null){
+            String superName = resourceTypeSuper.getName();
+            RoleType ownerRoleSuper = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_OWNER.getName(superName));
+            RoleType valueRoleSuper = getGraknGraph().putRoleTypeImplicit(Schema.Resource.HAS_RESOURCE_VALUE.getName(superName));
+            RelationType relationTypeSuper = getGraknGraph().putRelationTypeImplicit(Schema.Resource.HAS_RESOURCE.getName(superName)).
+                    hasRole(ownerRoleSuper).hasRole(valueRoleSuper);
+
+            ownerRole.superType(ownerRoleSuper);
+            valueRole.superType(valueRoleSuper);
+            relationType.superType(relationTypeSuper);
+        }
 
         this.playsRole(ownerRole, required);
         ((ResourceTypeImpl) resourceType).playsRole(valueRole, required);
 
-        return getGraknGraph().
-                putRelationTypeImplicit(Schema.Resource.HAS_RESOURCE.getName(resourceTypeId)).
-                hasRole(ownerRole).
-                hasRole(valueRole);
+        return relationType;
     }
 
     /**

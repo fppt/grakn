@@ -20,6 +20,7 @@ package ai.grakn.graql.internal.reasoner.atom.binary;
 
 import ai.grakn.graql.internal.reasoner.atom.Atom;
 import ai.grakn.graql.internal.reasoner.atom.Atomic;
+import ai.grakn.graql.internal.reasoner.atom.AtomicFactory;
 import ai.grakn.graql.internal.reasoner.atom.predicate.Predicate;
 import ai.grakn.graql.internal.reasoner.rule.InferenceRule;
 import ai.grakn.graql.admin.VarAdmin;
@@ -46,7 +47,7 @@ public abstract class Binary extends Atom {
     public Binary(Binary a) {
         super(a);
         this.valueVariable = extractValueVariableName(a.getPattern().asVar());
-        this.predicate = a.getPredicate() != null ? (Predicate) a.getPredicate().clone() : null;
+        this.predicate = a.getPredicate() != null ? (Predicate) AtomicFactory.create(a.getPredicate(), getParentQuery()) : null;
         this.typeId = extractTypeId(atomPattern.asVar());
     }
 
@@ -125,7 +126,6 @@ public abstract class Binary extends Atom {
     public String getValueVariable() {
         return valueVariable;
     }
-
     protected void setValueVariable(String var) {
         valueVariable = var;
     }
@@ -138,10 +138,9 @@ public abstract class Binary extends Atom {
     @Override
     public Set<Predicate> getIdPredicates() {
         //direct predicates
-        Set<Predicate> idPredicates = getParentQuery().getIdPredicates().stream()
+        return getParentQuery().getIdPredicates().stream()
                 .filter(atom -> containsVar(atom.getVarName()))
                 .collect(Collectors.toSet());
-        return idPredicates;
     }
 
     @Override

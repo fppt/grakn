@@ -18,6 +18,7 @@
 
 package ai.grakn.graph.internal;
 
+import ai.grakn.Grakn;
 import ai.grakn.GraknGraph;
 import ai.grakn.concept.Concept;
 import ai.grakn.concept.EntityType;
@@ -73,6 +74,7 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
     private final ThreadLocal<ConceptLog> localConceptLog = new ThreadLocal<>();
     private final ThreadLocal<Boolean> localIsClosed = new ThreadLocal<>();
     private final ThreadLocal<String> localClosedReason = new ThreadLocal<>();
+    private final ThreadLocal<Boolean> localShowImplicitStructures = new ThreadLocal<>();
 
     private boolean committed; //Shared between multiple threads so we know if a refresh must be performed
 
@@ -93,6 +95,7 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
         this.batchLoadingEnabled = batchLoadingEnabled;
         this.committed = false;
         localIsClosed.set(false);
+        localShowImplicitStructures.set(false);
     }
 
     @Override
@@ -102,11 +105,25 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
 
     @Override
     public boolean isClosed(){
-        Boolean value = localIsClosed.get();
+        return getBooleanFromLocalThread(localIsClosed);
+    }
+
+    @Override
+    public boolean implicitConceptsVisible(){
+        return getBooleanFromLocalThread(localShowImplicitStructures);
+    }
+
+    private boolean getBooleanFromLocalThread(ThreadLocal<Boolean> local){
+        Boolean value = local.get();
         if(value == null)
             return false;
         else
             return value;
+    }
+
+    @Override
+    public void showImplicitConcepts(boolean flag){
+        localShowImplicitStructures.set(flag);
     }
 
     public boolean hasCommitted(){
@@ -330,17 +347,6 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
         return getConcept(Schema.ConceptProperty.NAME, name);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <V> Resource<V> getResource(V value, ResourceType<V> type){
-        String index = ResourceImpl.generateResourceIndex(type, value.toString());
-        ConceptImpl concept = getConcept(Schema.ConceptProperty.INDEX, index);
-        if(concept != null){
-            return concept.asResource();
-        }
-        return null;
-    }
-
     @Override
     public <V> Collection<Resource<V>> getResourcesByValue(V value) {
         HashSet<Resource<V>> resources = new HashSet<>();
@@ -485,7 +491,6 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
                 }
             }
         }
-        ((RelationImpl)relation).setHash(relation.rolePlayers());
     }
 
     private void putShortcutEdge(Relation  relation, RelationType  relationType, RoleType fromRole, Instance from, RoleType  toRole, Instance to){
@@ -543,7 +548,11 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
     @Override
     public Relation getRelation(RelationType relationType, Map<RoleType, Instance> roleMap){
         String hash = RelationImpl.generateNewHash(relationType, roleMap);
-        Concept concept = getConcept(Schema.ConceptProperty.INDEX, hash);
+        Concept concept = getConceptLog().getCachedRelation(hash);
+
+        if(concept == null)
+            concept = getConcept(Schema.ConceptProperty.INDEX, hash);
+
         if(concept == null)
             return null;
         return concept.asRelation();
@@ -671,7 +680,7 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph 
         LOG.debug("Response from engine [" + result + "]");
     }
     String getCommitLogEndPoint(){
-        if(engine == null)
+        if(engine == null || Grakn.IN_MEMORY.equals(engine))
             return null;
         return engine + REST.WebPath.COMMIT_LOG_URI + "?" + REST.Request.KEYSPACE_PARAM + "=" + keyspace;
     }

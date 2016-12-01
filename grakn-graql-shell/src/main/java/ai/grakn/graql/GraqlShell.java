@@ -65,9 +65,11 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ai.grakn.util.REST.RemoteShell.ACTION;
 import static ai.grakn.util.REST.RemoteShell.ACTION_COMMIT;
+import static ai.grakn.util.REST.RemoteShell.ACTION_DISPLAY;
 import static ai.grakn.util.REST.RemoteShell.ACTION_END;
 import static ai.grakn.util.REST.RemoteShell.ACTION_ERROR;
 import static ai.grakn.util.REST.RemoteShell.ACTION_INIT;
@@ -76,6 +78,7 @@ import static ai.grakn.util.REST.RemoteShell.ACTION_QUERY;
 import static ai.grakn.util.REST.RemoteShell.ACTION_QUERY_ABORT;
 import static ai.grakn.util.REST.RemoteShell.ACTION_ROLLBACK;
 import static ai.grakn.util.REST.RemoteShell.ACTION_TYPES;
+import static ai.grakn.util.REST.RemoteShell.DISPLAY;
 import static ai.grakn.util.REST.RemoteShell.ERROR;
 import static ai.grakn.util.REST.RemoteShell.KEYSPACE;
 import static ai.grakn.util.REST.RemoteShell.OUTPUT_FORMAT;
@@ -109,6 +112,7 @@ public class GraqlShell {
     private static final String COMMIT_COMMAND = "commit";
     private static final String ROLLBACK_COMMAND = "rollback";
     private static final String LOAD_COMMAND = "load";
+    private static final String DISPLAY_COMMAND = "display";
     private static final String CLEAR_COMMAND = "clear";
     private static final String EXIT_COMMAND = "exit";
     private static final String LICENSE_COMMAND = "license";
@@ -194,7 +198,7 @@ public class GraqlShell {
 
         if (cmd.hasOption("b")) {
             try {
-                sendBatchRequest(uriString, cmd.getOptionValue("b"));
+                sendBatchRequest(uriString, cmd.getOptionValue("b"), keyspace);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -232,10 +236,10 @@ public class GraqlShell {
             return lines.stream().collect(Collectors.joining("\n"));
     }
 
-    private static void sendBatchRequest(String uriString, String graqlPath) throws IOException {
+    private static void sendBatchRequest(String uriString, String graqlPath, String keyspace) throws IOException {
         byte[] out = ("{\"path\": \"" + escapeJavaScript(graqlPath) + "\"}").getBytes(StandardCharsets.UTF_8);
 
-        URL url = new URL("http://" + uriString + IMPORT_DATA_URI);
+        URL url = new URL("http://" + uriString + IMPORT_DATA_URI + "?keyspace=" + keyspace);
         URLConnection con = url.openConnection();
         HttpURLConnection http = (HttpURLConnection) con;
         http.setRequestMethod("POST");
@@ -389,8 +393,22 @@ public class GraqlShell {
                     queryString = loadQuery(path);
                 } catch (IOException e) {
                     System.err.println(e.toString());
-                    break;
+                    continue;
                 }
+            }
+
+            // Set the resources to display
+            if (queryString.startsWith(DISPLAY_COMMAND + " ")) {
+                int endIndex;
+                if (queryString.endsWith(";")) {
+                    endIndex = queryString.length() - 1;
+                } else {
+                    endIndex = queryString.length();
+                }
+                String[] arguments = queryString.substring(DISPLAY_COMMAND.length() + 1, endIndex).split(",");
+                Set<String> resources = Stream.of(arguments).map(String::trim).collect(toSet());
+                setDisplayOptions(resources);
+                continue;
             }
 
             executeQuery(queryString);
@@ -495,6 +513,13 @@ public class GraqlShell {
             }
         }
         waitingQuery = false;
+    }
+
+    private void setDisplayOptions(Set<String> displayOptions) {
+        sendJson(Json.object(
+                ACTION, ACTION_DISPLAY,
+                DISPLAY, displayOptions
+        ));
     }
 
     private void commit() {

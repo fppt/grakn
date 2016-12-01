@@ -245,6 +245,16 @@ public class GraqlShellIT extends AbstractRollbackGraphTest {
     }
 
     @Test
+    public void testHALOutput() throws Exception {
+        String[] result = testShell("", "-e", "match $x sub type;", "-o", "hal").split("\n");
+        assertTrue("expected more than 5 results: " + Arrays.toString(result), result.length > 5);
+        Json json = Json.read(result[0]);
+        Json x = json.at("x");
+        assertTrue(x.has("_id"));
+        assertTrue(x.has("_baseType"));
+    }
+
+    @Test
     public void testRollbackSemicolon() throws Exception {
         // Tinker graph doesn't support rollback
         assumeFalse(usingTinker());
@@ -292,6 +302,29 @@ public class GraqlShellIT extends AbstractRollbackGraphTest {
         ByteArrayOutputStream err = new ByteArrayOutputStream();
         String out = testShell("", err, "-e", "insert bob isa relation-type;");
         assertFalse(out, err.toString().isEmpty());
+    }
+
+    @Test
+    public void testDefaultDontDisplayResources() throws Exception {
+        String result = testShell(
+                "insert X isa entity-type; R isa resource-type datatype string; X has-resource R; isa X has R 'foo';\n" +
+                "match $x isa X;\n"
+        );
+
+        // Confirm there is a result, but no resource value
+        assertThat(result, allOf(containsString("id"), not(containsString("\"foo\""))));
+    }
+
+    @Test
+    public void testDisplayResourcesCommand() throws Exception {
+        String result = testShell(
+                "insert X isa entity-type; R isa resource-type datatype string; X has-resource R; isa X has R 'foo';\n" +
+                "display R;\n" +
+                "match $x isa X;\n"
+        );
+
+        // Confirm there is a result, plus a resource value
+        assertThat(result, allOf(containsString("id"), containsString("\"foo\"")));
     }
 
     private static String randomString(int length) {

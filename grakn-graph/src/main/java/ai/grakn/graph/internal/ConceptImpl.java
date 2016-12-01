@@ -78,8 +78,14 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
     private T setProperty(String key, Object value){
         if(value == null)
             vertex.property(key).remove();
-        else
-            vertex.property(key, value);
+        else {
+            VertexProperty<Object> foundProperty = vertex.property(key);
+            if(foundProperty.isPresent() && foundProperty.value().equals(value)){
+               return getThis();
+            } else {
+                vertex.property(key, value);
+            }
+        }
         return getThis();
     }
 
@@ -166,7 +172,6 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
                     throw new ConceptException(ErrorMessage.LOOP_DETECTED.getMessage(toString(), Schema.EdgeLabel.SUB.getLabel() + " " + Schema.EdgeLabel.ISA.getLabel()));
                 }
                 visitedConcepts.add(currentConcept);
-
             }
         }
         return (V) type;
@@ -474,7 +479,7 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
 
         getEdgesOfType(Direction.OUT, edgeType).forEach(edge -> {
             X found = edge.getTarget();
-            if(found != null){
+            if(found != null) {
                 outgoingNeighbours.add(found);
             }
         });
@@ -549,7 +554,6 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
         return vertex;
     }
 
-    //------------ Setters ------------
     /**
      *
      * @param type The type of this concept
@@ -559,7 +563,6 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
         return setProperty(Schema.ConceptProperty.TYPE, type);
     }
 
-    //------------ Getters ------------
     /**
      *
      * @return The unique base identifier of this concept.
@@ -649,10 +652,12 @@ abstract class ConceptImpl<T extends Concept, V extends Type> implements Concept
      * @return The edge created
      */
     public EdgeImpl addEdge(ConceptImpl toConcept, Schema.EdgeLabel type) {
+        EdgeImpl newEdge = getGraknGraph().getElementFactory().buildEdge(toConcept.addEdgeFrom(this.vertex, type.getLabel()), graknGraph);
+
         graknGraph.getConceptLog().putConcept(this);
         graknGraph.getConceptLog().putConcept(toConcept);
 
-        return getGraknGraph().getElementFactory().buildEdge(toConcept.addEdgeFrom(this.vertex, type.getLabel()), graknGraph);
+        return newEdge;
     }
 
     /**
