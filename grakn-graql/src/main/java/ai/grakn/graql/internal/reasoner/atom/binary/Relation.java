@@ -159,7 +159,8 @@ public class Relation extends TypeAtom {
         if (obj == null || this.getClass() != obj.getClass()) return false;
         if (obj == this) return true;
         Relation a2 = (Relation) obj;
-        return this.getTypeName().equals(a2.getTypeName())
+        return ((this.typeId == null && a2.getTypeId() == null)
+                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
                 && this.getVarNames().equals(a2.getVarNames())
                 && relationPlayers.equals(a2.relationPlayers);
     }
@@ -167,7 +168,7 @@ public class Relation extends TypeAtom {
     @Override
     public int hashCode() {
         int hashCode = 1;
-        hashCode = hashCode * 37 + getTypeName().hashCode();
+        hashCode = hashCode * 37 + (getTypeId() != null? getTypeId().hashCode() : 0);
         hashCode = hashCode * 37 + getVarNames().hashCode();
         return hashCode;
     }
@@ -179,13 +180,15 @@ public class Relation extends TypeAtom {
         Relation a2 = (Relation) obj;
         Map<RoleType, String> map = getRoleConceptIdMap();
         Map<RoleType, String> map2 = a2.getRoleConceptIdMap();
-        return this.getTypeName().equals(a2.getTypeName()) && map.equals(map2);
+        return ((this.typeId == null && a2.getTypeId() == null)
+                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
+                && map.equals(map2);
     }
 
     @Override
     public int equivalenceHashCode() {
         int hashCode = 1;
-        hashCode = hashCode * 37 + this.typeName.hashCode();
+        hashCode = hashCode * 37 + (this.typeId != null? this.typeId.hashCode() : 0);
         hashCode = hashCode * 37 + this.getRoleConceptIdMap().hashCode();
         return hashCode;
     }
@@ -315,15 +318,15 @@ public class Relation extends TypeAtom {
     }
 
     private void addType(Type type) {
-        typeName = type.getName();
+        typeId = type.getId();
         VarName typeVariable = Patterns.varName("rel-" + UUID.randomUUID().toString());
-        addPredicate(new IdPredicate(Graql.var(typeVariable).id(ConceptId.of(typeName)).admin()));
+        addPredicate(new IdPredicate(Graql.var(typeVariable).id(typeId).admin()));
         atomPattern = atomPattern.asVar().isa(Graql.var(typeVariable)).admin();
         setValueVariable(typeVariable);
     }
 
     private void inferTypeFromRoles() {
-        if (getParentQuery() != null && !isValueUserDefinedName() && getTypeName().isEmpty()) {
+        if (getParentQuery() != null && !isValueUserDefinedName() && getTypeId() == null) {
             //look at available roles
             RelationType type = null;
             Set<RelationType> compatibleTypes = getCompatibleRelationTypes(getExplicitRoleTypes(), roleToRelationTypes);

@@ -18,6 +18,7 @@
 
 package ai.grakn.graql.internal.reasoner.atom.binary;
 
+import ai.grakn.concept.ConceptId;
 import ai.grakn.graql.admin.PatternAdmin;
 import ai.grakn.graql.admin.VarAdmin;
 import ai.grakn.graql.VarName;
@@ -48,16 +49,16 @@ public abstract class MultiPredicateBinary extends BinaryBase {
     protected MultiPredicateBinary(VarAdmin pattern, Set<Predicate> preds, Query par) {
         super(pattern, par);
         this.multiPredicate.addAll(preds);
-        this.typeName = extractTypeId(atomPattern.asVar());
+        this.typeId = extractTypeId(atomPattern.asVar());
     }
 
     protected MultiPredicateBinary(MultiPredicateBinary a) {
         super(a);
         a.getMultiPredicate().forEach(multiPredicate::add);
-        this.typeName = extractTypeId(atomPattern.asVar());
+        this.typeId = a.getTypeId() != null? ConceptId.of(a.getTypeId().getValue()) : null;
     }
 
-    protected abstract String extractTypeId(VarAdmin var);
+    protected abstract ConceptId extractTypeId(VarAdmin var);
 
     @Override
     public void setParentQuery(Query q) {
@@ -101,7 +102,7 @@ public abstract class MultiPredicateBinary extends BinaryBase {
     @Override
     public int equivalenceHashCode() {
         int hashCode = 1;
-        hashCode = hashCode * 37 + this.typeName.hashCode();
+        hashCode = hashCode * 37 + (this.typeId != null? this.typeId.hashCode() : 0);
         hashCode = hashCode * 37 + multiPredicateEquivalenceHashCode();
         return hashCode;
     }

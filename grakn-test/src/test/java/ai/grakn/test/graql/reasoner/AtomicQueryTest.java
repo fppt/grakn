@@ -28,6 +28,7 @@ import ai.grakn.graql.internal.reasoner.atom.predicate.IdPredicate;
 import ai.grakn.graql.internal.reasoner.query.AtomicQuery;
 import ai.grakn.test.AbstractGraknTest;
 import ai.grakn.test.graql.reasoner.graphs.AdmissionsGraph;
+import ai.grakn.test.graql.reasoner.graphs.GeoGraph;
 import ai.grakn.test.graql.reasoner.graphs.SNBGraph;
 import ai.grakn.test.graql.reasoner.graphs.TestGraph;
 import com.google.common.collect.Sets;
@@ -132,6 +133,30 @@ public class AtomicQueryTest extends AbstractGraknTest {
         AtomicQuery childQuery = new AtomicQuery(queryString2, lgraph);
         assertEquals(parentQuery, childQuery);
         assertEquals(parentQuery.hashCode(), childQuery.hashCode());
+    }
+
+    @Test
+    public void testQueryEquivalence(){
+        GraknGraph graph = GeoGraph.getGraph();
+        String queryString = "match " +
+                "isa $rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea (entity-location: $y1, geo-entity: $x);" +
+                "$rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea id '50';" +
+                "$rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea id '50';" +
+                "$x isa $type; " +
+                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';" +
+                "$type sub $type-sub-ac597b69-4967-48fb-b87d-d56530057afd;" +
+                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';select $x, $y1, $type;";
+        String queryString2 = "match " +
+                "$rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4 id '50';" +
+                "(geo-entity: $x, entity-location: $y) isa $rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4;" +
+                "$x isa $type;" +
+                "$rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4 id '50';" +
+                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';" +
+                "$type sub $type-sub-ac597b69-4967-48fb-b87d-d56530057afd;" +
+                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56'; select $x, $y, $type;";
+        AtomicQuery query = new AtomicQuery(queryString, graph);
+        AtomicQuery query2 = new AtomicQuery(queryString2, graph);
+        assertTrue(query.isEquivalent(query2));
     }
 
     private static Concept getConcept(String id){

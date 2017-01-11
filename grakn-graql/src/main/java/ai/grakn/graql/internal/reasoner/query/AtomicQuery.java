@@ -92,7 +92,7 @@ public class AtomicQuery extends Query{
     }
 
     private void addChild(AtomicQuery q){
-        if (!this.isEquivalent(q) && atom.getTypeName().equals(q.getAtom().getTypeName())){
+        if (!this.isEquivalent(q) && atom.getTypeId().equals(q.getAtom().getTypeId())){
             children.add(q);
             q.setParent(this);
         }
@@ -111,7 +111,7 @@ public class AtomicQuery extends Query{
      */
     public void establishRelation(AtomicQuery aq){
         Atom aqAtom = aq.getAtom();
-        if(atom.getTypeName().equals(aqAtom.getTypeName())) {
+        if(atom.getTypeId().equals(aqAtom.getTypeId())) {
             if (atom.isRelation() && aqAtom.getRoleVarTypeMap().size() > atom.getRoleVarTypeMap().size())
                 aq.addChild(this);
             else

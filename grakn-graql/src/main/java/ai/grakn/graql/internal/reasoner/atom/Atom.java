@@ -18,6 +18,7 @@
 package ai.grakn.graql.internal.reasoner.atom;
 
 import ai.grakn.GraknGraph;
+import ai.grakn.concept.ConceptId;
 import ai.grakn.concept.RoleType;
 import ai.grakn.concept.Rule;
 import ai.grakn.concept.Type;
@@ -48,14 +49,14 @@ import java.util.Set;
 public abstract class Atom extends AtomBase {
 
     protected Type type = null;
-    protected String typeName = null;
+    protected ConceptId typeId = null;
 
     protected Atom(VarAdmin pattern) { this(pattern, null);}
     protected Atom(VarAdmin pattern, Query par) { super(pattern, par);}
     protected Atom(Atom a) {
         super(a);
         this.type = a.type;
-        this.typeName = a.typeName;
+        this.typeId = ConceptId.of(a.typeId.getValue());
     }
 
     @Override
@@ -105,15 +106,13 @@ public abstract class Atom extends AtomBase {
         if (isResource()) return false;
         boolean atomRecursive = false;
 
-        String typeId = getTypeName();
-        if (typeId.isEmpty()) return false;
+        if (typeId == null) return false;
         Type type = getType();
         Collection<Rule> presentInConclusion = type.getRulesOfConclusion();
         Collection<Rule> presentInHypothesis = type.getRulesOfHypothesis();
 
         for(Rule rule : presentInConclusion)
             atomRecursive |= presentInHypothesis.contains(rule);
-
         return atomRecursive;
     }
 
@@ -126,15 +125,15 @@ public abstract class Atom extends AtomBase {
      * @return corresponding type if any
      */
     public Type getType(){
-        if (type == null)
-            type = getParentQuery().graph().getType(typeName);
+        if (type == null && typeId != null)
+            type = getParentQuery().graph().getConcept(typeId).asType();
         return type;
     }
 
     /**
      * @return type id of the corresponding type if any
      */
-    public String getTypeName(){ return typeName;}
+    public ConceptId getTypeId(){ return typeId;}
 
     /**
      * @return value variable name

@@ -1,5 +1,6 @@
 package ai.grakn.graql.internal.reasoner.atom.binary;
 
+import ai.grakn.concept.ConceptId;
 import ai.grakn.graql.admin.PatternAdmin;
 import ai.grakn.graql.admin.VarAdmin;
 import ai.grakn.graql.VarName;
@@ -29,16 +30,16 @@ public abstract class Binary extends BinaryBase {
     protected Binary(VarAdmin pattern, IdPredicate p, Query par) {
         super(pattern, par);
         this.predicate = p;
-        this.typeName = extractTypeId(atomPattern.asVar());
+        this.typeId = extractTypeId(atomPattern.asVar());
     }
 
     protected Binary(Binary a) {
         super(a);
         this.predicate = a.getPredicate() != null ? (IdPredicate) AtomicFactory.create(a.getPredicate(), getParentQuery()) : null;
-        this.typeName = extractTypeId(atomPattern.asVar());
+        this.typeId = extractTypeId(atomPattern.asVar());
     }
 
-    protected abstract String extractTypeId(VarAdmin var);
+    protected abstract ConceptId extractTypeId(VarAdmin var);
 
     @Override
     public PatternAdmin getCombinedPattern() {
@@ -67,7 +68,7 @@ public abstract class Binary extends BinaryBase {
     @Override
     public int equivalenceHashCode() {
         int hashCode = 1;
-        hashCode = hashCode * 37 + this.typeName.hashCode();
+        hashCode = hashCode * 37 + (typeId != null? this.typeId.hashCode() : 0);
         hashCode = hashCode * 37 + (predicate != null ? predicate.equivalenceHashCode() : 0);
         return hashCode;
     }

@@ -17,6 +17,7 @@
  */
 package ai.grakn.graql.internal.reasoner.atom.binary;
 
+import ai.grakn.concept.ConceptId;
 import ai.grakn.concept.Type;
 import ai.grakn.graql.Graql;
 import ai.grakn.graql.Var;
@@ -52,8 +53,8 @@ public class TypeAtom extends Binary{
     protected TypeAtom(TypeAtom a) { super(a);}
 
     @Override
-    protected String extractTypeId(VarAdmin var) {
-        return getPredicate() != null? getPredicate().getPredicateValue() : null;
+    protected ConceptId extractTypeId(VarAdmin var) {
+        return getPredicate() != null? getPredicate().getPredicate() : null;
     }
 
     @Override
