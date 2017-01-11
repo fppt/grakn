@@ -47,6 +47,7 @@ import ai.grakn.util.ErrorMessage;
 import ai.grakn.util.Schema;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Objects;
 import javafx.util.Pair;
 
 import java.util.AbstractMap;
@@ -159,8 +160,7 @@ public class Relation extends TypeAtom {
         if (obj == null || this.getClass() != obj.getClass()) return false;
         if (obj == this) return true;
         Relation a2 = (Relation) obj;
-        return ((this.typeId == null && a2.getTypeId() == null)
-                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
+        return Objects.equals(this.typeId, a2.getTypeId())
                 && this.getVarNames().equals(a2.getVarNames())
                 && relationPlayers.equals(a2.relationPlayers);
     }
@@ -180,8 +180,7 @@ public class Relation extends TypeAtom {
         Relation a2 = (Relation) obj;
         Map<RoleType, String> map = getRoleConceptIdMap();
         Map<RoleType, String> map2 = a2.getRoleConceptIdMap();
-        return ((this.typeId == null && a2.getTypeId() == null)
-                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
+        return Objects.equals(this.typeId, a2.getTypeId())
                 && map.equals(map2);
     }
 

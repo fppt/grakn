@@ -103,10 +103,9 @@ public abstract class Atom extends AtomBase {
 
     @Override
     public boolean isRecursive(){
-        if (isResource()) return false;
+        if (isResource() || getType() == null) return false;
         boolean atomRecursive = false;
 
-        if (typeId == null) return false;
         Type type = getType();
         Collection<Rule> presentInConclusion = type.getRulesOfConclusion();
         Collection<Rule> presentInHypothesis = type.getRulesOfHypothesis();

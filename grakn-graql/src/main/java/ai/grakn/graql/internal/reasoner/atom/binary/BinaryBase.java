@@ -30,6 +30,7 @@ import ai.grakn.util.ErrorMessage;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -98,8 +99,7 @@ public abstract class BinaryBase extends Atom {
         if (obj == null || this.getClass() != obj.getClass()) return false;
         if (obj == this) return true;
         BinaryBase a2 = (BinaryBase) obj;
-        return ((this.typeId == null && a2.getTypeId() == null)
-                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
+        return Objects.equals(this.typeId, a2.getTypeId())
                 && this.varName.equals(a2.getVarName())
                 && this.valueVariable.equals(a2.getValueVariable());
     }
@@ -109,8 +109,7 @@ public abstract class BinaryBase extends Atom {
         if (obj == null || this.getClass() != obj.getClass()) return false;
         if (obj == this) return true;
         BinaryBase a2 = (BinaryBase) obj;
-        return ((this.typeId == null && a2.getTypeId() == null)
-                || (this.typeId != null && this.typeId.equals(a2.getTypeId())))
+        return Objects.equals(this.typeId, a2.getTypeId())
                 && predicatesEquivalent(a2);
     }
 

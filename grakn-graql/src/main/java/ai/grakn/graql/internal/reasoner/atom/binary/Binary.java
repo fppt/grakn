@@ -62,7 +62,7 @@ public abstract class Binary extends BinaryBase {
         Predicate pred = getPredicate();
         Predicate objPredicate = ((Binary) atom).getPredicate();
         return (pred == null && objPredicate == null)
-                || ((pred != null && objPredicate != null) && pred.isEquivalent(objPredicate));
+                || (pred != null  && pred.isEquivalent(objPredicate));
     }
 
     @Override
