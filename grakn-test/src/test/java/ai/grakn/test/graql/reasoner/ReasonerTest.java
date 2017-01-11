@@ -333,8 +333,7 @@ public class ReasonerTest extends AbstractGraknTest {
                 "$y isa country;$y has name 'Poland';(geo-entity: $x, entity-location: $y) isa is-located-in;$x has name $name;";
         MatchQuery query = lgraph.graql().parse(queryString);
         MatchQuery query2 = lgraph.graql().parse(queryString2);
-        Reasoner.resolve(query, false).collect(Collectors.toSet());
-        //assertQueriesEqual(Reasoner.resolve(query, false), Reasoner.resolve(query2, false));
+        assertQueriesEqual(Reasoner.resolve(query, false), Reasoner.resolve(query2, false));
     }
 
     @Test

@@ -139,21 +139,11 @@ public class AtomicQueryTest extends AbstractGraknTest {
     public void testQueryEquivalence(){
         GraknGraph graph = GeoGraph.getGraph();
         String queryString = "match " +
-                "isa $rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea (entity-location: $y1, geo-entity: $x);" +
-                "$rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea id '50';" +
-                "$rel-c193f4c5-73f5-4036-9380-a8a2d863a5ea id '50';" +
-                "$x isa $type; " +
-                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';" +
-                "$type sub $type-sub-ac597b69-4967-48fb-b87d-d56530057afd;" +
-                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';select $x, $y1, $type;";
+                "(entity-location: $x2, geo-entity: $xx) isa is-located-in;" +
+                "$x1 isa $t1; $t1 sub geoObject;";
         String queryString2 = "match " +
-                "$rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4 id '50';" +
-                "(geo-entity: $x, entity-location: $y) isa $rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4;" +
-                "$x isa $type;" +
-                "$rel-5c67b2e2-fdfb-44b9-b37f-5880a3bd87b4 id '50';" +
-                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56';" +
-                "$type sub $type-sub-ac597b69-4967-48fb-b87d-d56530057afd;" +
-                "$type-sub-ac597b69-4967-48fb-b87d-d56530057afd id '56'; select $x, $y, $type;";
+                "(geo-entity: $y1, entity-location: $y2) isa is-located-in;" +
+                "$y1 isa $t2; $t2 sub geoObject;";
         AtomicQuery query = new AtomicQuery(queryString, graph);
         AtomicQuery query2 = new AtomicQuery(queryString2, graph);
         assertTrue(query.isEquivalent(query2));
