@@ -36,7 +36,7 @@ public abstract class Binary extends BinaryBase {
     protected Binary(Binary a) {
         super(a);
         this.predicate = a.getPredicate() != null ? (IdPredicate) AtomicFactory.create(a.getPredicate(), getParentQuery()) : null;
-        this.typeId = extractTypeId(atomPattern.asVar());
+        this.typeId = a.getTypeId() != null? ConceptId.of(a.getTypeId().getValue()) : null;
     }
 
     protected abstract ConceptId extractTypeId(VarAdmin var);

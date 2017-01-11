@@ -24,6 +24,8 @@ import ai.grakn.graql.admin.VarAdmin;
 import ai.grakn.graql.VarName;
 import ai.grakn.graql.internal.pattern.Patterns;
 import ai.grakn.graql.internal.reasoner.atom.AtomBase;
+import ai.grakn.graql.internal.reasoner.atom.AtomicFactory;
+import ai.grakn.graql.internal.reasoner.atom.predicate.IdPredicate;
 import ai.grakn.graql.internal.reasoner.atom.predicate.Predicate;
 import ai.grakn.graql.internal.reasoner.query.Query;
 
@@ -54,7 +56,7 @@ public abstract class MultiPredicateBinary extends BinaryBase {
 
     protected MultiPredicateBinary(MultiPredicateBinary a) {
         super(a);
-        a.getMultiPredicate().forEach(multiPredicate::add);
+        a.getMultiPredicate().forEach(pred -> multiPredicate.add((Predicate) AtomicFactory.create(pred, getParentQuery())));
         this.typeId = a.getTypeId() != null? ConceptId.of(a.getTypeId().getValue()) : null;
     }
 
