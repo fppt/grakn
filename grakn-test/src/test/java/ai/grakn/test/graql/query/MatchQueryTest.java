@@ -25,7 +25,6 @@ import ai.grakn.concept.ConceptId;
 import ai.grakn.concept.Instance;
 import ai.grakn.concept.Resource;
 import ai.grakn.concept.ResourceType;
-import ai.grakn.concept.Type;
 import ai.grakn.graql.MatchQuery;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.graql.internal.pattern.property.LhsProperty;
@@ -434,7 +433,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
 
     @Test
     public void testSelectRuleTypes() {
-        MatchQuery query = qb.match(var("x").sub(RULE.getName()));
+        MatchQuery query = qb.match(var("x").sub(RULE.getName().getValue()));
         QueryUtil.assertResultsMatch(query, "x", null, graph.getResourceType("title"), "rule", "a-rule-type", "inference-rule", "constraint-rule");
     }
 
@@ -564,7 +563,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
 
     @Test
     public void testMatchAllInstances() {
-        MatchQuery query = qb.match(var("x").isa(Schema.MetaSchema.CONCEPT.getName()));
+        MatchQuery query = qb.match(var("x").isa(Schema.MetaSchema.CONCEPT.getName().getValue()));
 
         // Make sure there a reasonable number of results
         assertTrue(query.stream().count() > 10);
@@ -742,7 +741,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
     public void testHideImplicitTypes() {
         MatchQuery query = qb.match(var("x").sub("concept"));
 
-        Set<String> types = query.get("x").map(Concept::asType).map(Type::getName).collect(toSet());
+        Set<String> types = query.get("x").map(Concept::asType).map(type -> type.getName().getValue()).collect(toSet());
 
         assertThat(types, allOf(hasItem("movie"), not(hasItem("has-title"))));
     }
@@ -751,7 +750,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
     public void testDontHideImplicitTypesIfExplicitlyMentioned() {
         MatchQuery query = qb.match(var("x").sub("concept").name("has-title"));
 
-        Set<String> types = query.get("x").map(Concept::asType).map(Type::getName).collect(toSet());
+        Set<String> types = query.get("x").map(Concept::asType).map(type -> type.getName().getValue()).collect(toSet());
 
         assertEquals(types, Sets.newHashSet("has-title"));
     }
@@ -762,7 +761,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
 
         MatchQuery query = qb.match(var("x").sub("concept"));
 
-        Set<String> types = query.get("x").map(Concept::asType).map(Type::getName).collect(toSet());
+        Set<String> types = query.get("x").map(Concept::asType).map(type -> type.getName().getValue()).collect(toSet());
 
         assertThat(types, allOf(hasItem("movie"), hasItem("has-title")));
     }
@@ -771,12 +770,12 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
     public void testHideImplicitTypesTwice() {
         MatchQuery query = qb.match(var("x").sub("concept"));
 
-        Set<String> types = query.get("x").map(Concept::asType).map(Type::getName).collect(toSet());
+        Set<String> types = query.get("x").map(Concept::asType).map(type -> type.getName().getValue()).collect(toSet());
 
         assertThat(types, allOf(hasItem("movie"), not(hasItem("has-title"))));
 
         GraknGraph graph2 = Grakn.factory(Grakn.DEFAULT_URI, graph.getKeyspace()).getGraph();
-        Set<String> typesAgain = graph2.graql().match(var("x").sub("concept")).get("x").map(Concept::asType).map(Type::getName).collect(toSet());
+        Set<String> typesAgain = graph2.graql().match(var("x").sub("concept")).get("x").map(Concept::asType).map(type -> type.getName().getValue()).collect(toSet());
 
         assertEquals(types, typesAgain);
     }

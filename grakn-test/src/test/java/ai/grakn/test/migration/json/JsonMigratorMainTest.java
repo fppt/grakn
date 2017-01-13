@@ -22,6 +22,7 @@ import ai.grakn.concept.Entity;
 import ai.grakn.concept.EntityType;
 import ai.grakn.concept.Instance;
 import ai.grakn.concept.Resource;
+import ai.grakn.concept.TypeName;
 import ai.grakn.migration.json.Main;
 import ai.grakn.test.migration.AbstractGraknMigratorTest;
 import org.junit.Before;
@@ -108,7 +109,7 @@ public class JsonMigratorMainTest extends AbstractGraknMigratorTest {
         Entity address = getProperty(person, "has-address").asEntity();
         Entity streetAddress = getProperty(address, "address-has-street").asEntity();
 
-        Resource number = getResource(streetAddress, "number").asResource();
+        Resource number = getResource(streetAddress, TypeName.of("number")).asResource();
         assertEquals(21L, number.getValue());
 
         Collection<Instance> phoneNumbers = getProperties(person, "has-phone");

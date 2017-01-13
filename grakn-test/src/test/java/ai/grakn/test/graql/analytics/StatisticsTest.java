@@ -25,6 +25,7 @@ import ai.grakn.concept.EntityType;
 import ai.grakn.concept.RelationType;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.concept.RoleType;
+import ai.grakn.concept.TypeName;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.graql.ComputeQuery;
 import ai.grakn.graql.Graql;
@@ -54,16 +55,16 @@ import static org.junit.Assume.assumeFalse;
 
 public class StatisticsTest extends AbstractGraphTest {
 
-    private static final String thing = "thing";
-    private static final String anotherThing = "anotherThing";
+    private static final TypeName thing = TypeName.of("thing");
+    private static final TypeName anotherThing = TypeName.of("anotherThing");
 
-    private static final String resourceType1 = "resourceType1";
-    private static final String resourceType2 = "resourceType2";
-    private static final String resourceType3 = "resourceType3";
-    private static final String resourceType4 = "resourceType4";
-    private static final String resourceType5 = "resourceType5";
-    private static final String resourceType6 = "resourceType6";
-    private static final String resourceType7 = "resourceType7";
+    private static final TypeName resourceType1 = TypeName.of("resourceType1");
+    private static final TypeName resourceType2 = TypeName.of("resourceType2");
+    private static final TypeName resourceType3 = TypeName.of("resourceType3");
+    private static final TypeName resourceType4 = TypeName.of("resourceType4");
+    private static final TypeName resourceType5 = TypeName.of("resourceType5");
+    private static final TypeName resourceType6 = TypeName.of("resourceType6");
+    private static final TypeName resourceType7 = TypeName.of("resourceType7");
 
     private static final double delta = 0.000001;
 
@@ -135,7 +136,7 @@ public class StatisticsTest extends AbstractGraphTest {
         assertIllegalStateExceptionThrown(graph.graql().compute().median().of(resourceType4)::execute);
 
         // resource-types have different data types
-        Set<String> resourceTypes = Sets.newHashSet(resourceType1, resourceType2);
+        Set<TypeName> resourceTypes = Sets.newHashSet(resourceType1, resourceType2);
         assertIllegalStateExceptionThrown(graph.graql().compute().max().of(resourceTypes)::execute);
         assertIllegalStateExceptionThrown(graph.graql().compute().min().of(resourceTypes)::execute);
         assertIllegalStateExceptionThrown(graph.graql().compute().mean().of(resourceTypes)::execute);
@@ -555,25 +556,25 @@ public class StatisticsTest extends AbstractGraphTest {
     private void addResourcesInstances() throws GraknValidationException {
         graph = Grakn.factory(Grakn.DEFAULT_URI, keyspace).getGraph();
 
-        graph.getResourceType(resourceType1).putResource(1.2);
-        graph.getResourceType(resourceType1).putResource(1.5);
-        graph.getResourceType(resourceType1).putResource(1.8);
+        graph.<ResourceType<Double>>getType(resourceType1).putResource(1.2);
+        graph.<ResourceType<Double>>getType(resourceType1).putResource(1.5);
+        graph.<ResourceType<Double>>getType(resourceType1).putResource(1.8);
 
-        graph.getResourceType(resourceType2).putResource(4L);
-        graph.getResourceType(resourceType2).putResource(-1L);
-        graph.getResourceType(resourceType2).putResource(0L);
+        graph.<ResourceType<Long>>getType(resourceType2).putResource(4L);
+        graph.<ResourceType<Long>>getType(resourceType2).putResource(-1L);
+        graph.<ResourceType<Long>>getType(resourceType2).putResource(0L);
 
-        graph.getResourceType(resourceType5).putResource(6L);
-        graph.getResourceType(resourceType5).putResource(7L);
-        graph.getResourceType(resourceType5).putResource(8L);
+        graph.<ResourceType<Long>>getType(resourceType5).putResource(6L);
+        graph.<ResourceType<Long>>getType(resourceType5).putResource(7L);
+        graph.<ResourceType<Long>>getType(resourceType5).putResource(8L);
 
-        graph.getResourceType(resourceType6).putResource(7.2);
-        graph.getResourceType(resourceType6).putResource(7.5);
-        graph.getResourceType(resourceType6).putResource(7.8);
+        graph.<ResourceType<Double>>getType(resourceType6).putResource(7.2);
+        graph.<ResourceType<Double>>getType(resourceType6).putResource(7.5);
+        graph.<ResourceType<Double>>getType(resourceType6).putResource(7.8);
 
-        graph.getResourceType(resourceType4).putResource("a");
-        graph.getResourceType(resourceType4).putResource("b");
-        graph.getResourceType(resourceType4).putResource("c");
+        graph.<ResourceType<String>>getType(resourceType4).putResource("a");
+        graph.<ResourceType<String>>getType(resourceType4).putResource("b");
+        graph.<ResourceType<String>>getType(resourceType4).putResource("c");
 
         graph.commit();
         graph = Grakn.factory(Grakn.DEFAULT_URI, keyspace).getGraph();
@@ -587,71 +588,71 @@ public class StatisticsTest extends AbstractGraphTest {
         Entity entity3 = graph.getConcept(entityId3);
         Entity entity4 = graph.getConcept(entityId4);
 
-        RoleType resourceOwner1 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType1));
-        RoleType resourceOwner2 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType2));
-        RoleType resourceOwner3 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType3));
-        RoleType resourceOwner4 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType4));
-        RoleType resourceOwner5 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType5));
-        RoleType resourceOwner6 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType6));
+        RoleType resourceOwner1 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType1));
+        RoleType resourceOwner2 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType2));
+        RoleType resourceOwner3 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType3));
+        RoleType resourceOwner4 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType4));
+        RoleType resourceOwner5 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType5));
+        RoleType resourceOwner6 = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(resourceType6));
 
-        RoleType resourceValue1 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType1));
-        RoleType resourceValue2 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType2));
-        RoleType resourceValue3 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType3));
-        RoleType resourceValue4 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType4));
-        RoleType resourceValue5 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType5));
-        RoleType resourceValue6 = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType6));
+        RoleType resourceValue1 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType1));
+        RoleType resourceValue2 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType2));
+        RoleType resourceValue3 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType3));
+        RoleType resourceValue4 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType4));
+        RoleType resourceValue5 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType5));
+        RoleType resourceValue6 = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(resourceType6));
 
-        RelationType relationType1 = graph.getRelationType(Schema.Resource.HAS_RESOURCE.getName(resourceType1));
+        RelationType relationType1 = graph.getType(Schema.Resource.HAS_RESOURCE.getName(resourceType1));
         relationType1.addRelation()
                 .putRolePlayer(resourceOwner1, entity1)
-                .putRolePlayer(resourceValue1, graph.getResourceType(resourceType1).putResource(1.2));
+                .putRolePlayer(resourceValue1, graph.<ResourceType<Double>>getType(resourceType1).putResource(1.2));
         relationType1.addRelation()
                 .putRolePlayer(resourceOwner1, entity1)
-                .putRolePlayer(resourceValue1, graph.getResourceType(resourceType1).putResource(1.5));
+                .putRolePlayer(resourceValue1, graph.<ResourceType<Double>>getType(resourceType1).putResource(1.5));
         relationType1.addRelation()
                 .putRolePlayer(resourceOwner1, entity3)
-                .putRolePlayer(resourceValue1, graph.getResourceType(resourceType1).putResource(1.8));
+                .putRolePlayer(resourceValue1, graph.<ResourceType<Double>>getType(resourceType1).putResource(1.8));
 
-        RelationType relationType2 = graph.getRelationType(Schema.Resource.HAS_RESOURCE.getName(resourceType2));
+        RelationType relationType2 = graph.getType(Schema.Resource.HAS_RESOURCE.getName(resourceType2));
         relationType2.addRelation()
                 .putRolePlayer(resourceOwner2, entity1)
-                .putRolePlayer(resourceValue2, graph.getResourceType(resourceType2).putResource(4L));
+                .putRolePlayer(resourceValue2, graph.<ResourceType<Long>>getType(resourceType2).putResource(4L));
         relationType2.addRelation()
                 .putRolePlayer(resourceOwner2, entity1)
-                .putRolePlayer(resourceValue2, graph.getResourceType(resourceType2).putResource(-1L));
+                .putRolePlayer(resourceValue2, graph.<ResourceType<Long>>getType(resourceType2).putResource(-1L));
         relationType2.addRelation()
                 .putRolePlayer(resourceOwner2, entity4)
-                .putRolePlayer(resourceValue2, graph.getResourceType(resourceType2).putResource(0L));
+                .putRolePlayer(resourceValue2, graph.<ResourceType<Long>>getType(resourceType2).putResource(0L));
 
-        graph.getResourceType(resourceType3).putResource(100L);
+        graph.<ResourceType<Long>>getType(resourceType3).putResource(100L);
 
-        RelationType relationType5 = graph.getRelationType(Schema.Resource.HAS_RESOURCE.getName(resourceType5));
+        RelationType relationType5 = graph.getType(Schema.Resource.HAS_RESOURCE.getName(resourceType5));
         relationType5.addRelation()
                 .putRolePlayer(resourceOwner5, entity1)
-                .putRolePlayer(resourceValue5, graph.getResourceType(resourceType5).putResource(-7L));
+                .putRolePlayer(resourceValue5, graph.<ResourceType<Long>>getType(resourceType5).putResource(-7L));
         relationType5.addRelation()
                 .putRolePlayer(resourceOwner5, entity2)
-                .putRolePlayer(resourceValue5, graph.getResourceType(resourceType5).putResource(-7L));
+                .putRolePlayer(resourceValue5, graph.<ResourceType<Long>>getType(resourceType5).putResource(-7L));
         relationType5.addRelation()
                 .putRolePlayer(resourceOwner5, entity4)
-                .putRolePlayer(resourceValue5, graph.getResourceType(resourceType5).putResource(-7L));
+                .putRolePlayer(resourceValue5, graph.<ResourceType<Long>>getType(resourceType5).putResource(-7L));
 
-        RelationType relationType6 = graph.getRelationType(Schema.Resource.HAS_RESOURCE.getName(resourceType6));
+        RelationType relationType6 = graph.getType(Schema.Resource.HAS_RESOURCE.getName(resourceType6));
         relationType6.addRelation()
                 .putRolePlayer(resourceOwner6, entity1)
-                .putRolePlayer(resourceValue6, graph.getResourceType(resourceType6).putResource(7.5));
+                .putRolePlayer(resourceValue6, graph.<ResourceType<Double>>getType(resourceType6).putResource(7.5));
         relationType6.addRelation()
                 .putRolePlayer(resourceOwner6, entity2)
-                .putRolePlayer(resourceValue6, graph.getResourceType(resourceType6).putResource(7.5));
+                .putRolePlayer(resourceValue6, graph.<ResourceType<Double>>getType(resourceType6).putResource(7.5));
         relationType6.addRelation()
                 .putRolePlayer(resourceOwner6, entity4)
-                .putRolePlayer(resourceValue6, graph.getResourceType(resourceType6).putResource(7.5));
+                .putRolePlayer(resourceValue6, graph.<ResourceType<Double>>getType(resourceType6).putResource(7.5));
 
         // some resources in, but not connect them to any instances
-        graph.getResourceType(resourceType1).putResource(2.8);
-        graph.getResourceType(resourceType2).putResource(-5L);
-        graph.getResourceType(resourceType5).putResource(10L);
-        graph.getResourceType(resourceType6).putResource(0.8);
+        graph.<ResourceType<Double>>getType(resourceType1).putResource(2.8);
+        graph.<ResourceType<Long>>getType(resourceType2).putResource(-5L);
+        graph.<ResourceType<Long>>getType(resourceType5).putResource(10L);
+        graph.<ResourceType<Double>>getType(resourceType6).putResource(0.8);
 
         graph.commit();
         graph = Grakn.factory(Grakn.DEFAULT_URI, keyspace).getGraph();

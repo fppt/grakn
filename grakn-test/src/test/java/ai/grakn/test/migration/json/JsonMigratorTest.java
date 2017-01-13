@@ -18,13 +18,14 @@
 
 package ai.grakn.test.migration.json;
 
-import ai.grakn.migration.json.JsonMigrator;
-import ai.grakn.test.migration.AbstractGraknMigratorTest;
-import com.google.common.collect.Sets;
 import ai.grakn.concept.Entity;
 import ai.grakn.concept.EntityType;
 import ai.grakn.concept.Instance;
 import ai.grakn.concept.Resource;
+import ai.grakn.concept.TypeName;
+import ai.grakn.migration.json.JsonMigrator;
+import ai.grakn.test.migration.AbstractGraknMigratorTest;
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import java.io.FileNotFoundException;
@@ -77,21 +78,21 @@ public class JsonMigratorTest extends AbstractGraknMigratorTest {
 
         Entity streetAddress = getProperty(address, "address-has-street").asEntity();
 
-        Resource number = getResource(streetAddress, "number").asResource();
+        Resource number = getResource(streetAddress, TypeName.of("number")).asResource();
         assertEquals(21L, number.getValue());
 
-        Resource street = getResource(streetAddress, "street").asResource();
+        Resource street = getResource(streetAddress, TypeName.of("street")).asResource();
         assertEquals("2nd Street", street.getValue());
 
-        Resource city = getResource(address, "city").asResource();
+        Resource city = getResource(address, TypeName.of("city")).asResource();
         assertEquals("New York", city.getValue());
 
         Collection<Instance> phoneNumbers = getProperties(person, "has-phone");
         assertEquals(2, phoneNumbers.size());
 
         boolean phoneNumbersCorrect = phoneNumbers.stream().allMatch(phoneNumber -> {
-            Object location = getResource(phoneNumber, "location").getValue();
-            Object code = getResource(phoneNumber, "code").getValue();
+            Object location = getResource(phoneNumber, TypeName.of("location")).getValue();
+            Object code = getResource(phoneNumber, TypeName.of("code")).getValue();
             return ((location.equals("home") && code.equals(44L)) || (location.equals("work") && code.equals(45L)));
         });
 
@@ -121,16 +122,16 @@ public class JsonMigratorTest extends AbstractGraknMigratorTest {
 
         Entity thing = things.iterator().next();
 
-        Collection<Object> integers = getResources(thing, "a-int").map(r -> r.asResource().getValue()).collect(toSet());
+        Collection<Object> integers = getResources(thing, TypeName.of("a-int")).map(r -> r.asResource().getValue()).collect(toSet());
         assertEquals(Sets.newHashSet(1L, 2L, 3L), integers);
 
-        Resource aBoolean = getResource(thing, "a-boolean");
+        Resource aBoolean = getResource(thing, TypeName.of("a-boolean"));
         assertEquals(true, aBoolean.getValue());
 
-        Resource aNumber = getResource(thing, "a-number");
+        Resource aNumber = getResource(thing, TypeName.of("a-number"));
         assertEquals(42.1, aNumber.getValue());
 
-        Resource aString = getResource(thing, "a-string");
+        Resource aString = getResource(thing, TypeName.of("a-string"));
         assertEquals("hi", aString.getValue());
 
         assertEquals(0, graph.getResourceType("a-null").instances().size());
@@ -153,7 +154,7 @@ public class JsonMigratorTest extends AbstractGraknMigratorTest {
 
         Collection<Entity> things = theThing.instances();
         boolean thingsCorrect = things.stream().allMatch(thing -> {
-            Object string = getResource(thing, "a-string").getValue();
+            Object string = getResource(thing, TypeName.of("a-string")).getValue();
             return string.equals("hello") || string.equals("goodbye");
         });
 

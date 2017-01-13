@@ -147,7 +147,7 @@ public class TestGraph {
 
     protected Instance putEntity(String id, EntityType type) {
         Instance inst = type.addEntity();
-        putResource(inst, graknGraph.getResourceType(key.getName()), id);
+        putResource(inst, graknGraph.getType(key.getName()), id);
         return inst;
     }
 

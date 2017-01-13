@@ -22,6 +22,7 @@ import ai.grakn.concept.EntityType;
 import ai.grakn.concept.RelationType;
 import ai.grakn.concept.Resource;
 import ai.grakn.concept.RoleType;
+import ai.grakn.concept.TypeName;
 import ai.grakn.graql.internal.reasoner.Reasoner;
 import ai.grakn.migration.owl.OwlModel;
 import org.junit.Assert;
@@ -104,7 +105,7 @@ public class TestSamplesImport extends TestOwlGraknBase {
             Assert.assertNotNull(author);
             final Entity work = getEntity("eHamlet");
             Assert.assertNotNull(work);
-            assertRelationBetweenInstancesExists(work, author, "op-wrote");
+            assertRelationBetweenInstancesExists(work, author, TypeName.of("op-wrote"));
             assertTrue(!Reasoner.getRules(graph).isEmpty());
         }
         catch (Throwable t) {

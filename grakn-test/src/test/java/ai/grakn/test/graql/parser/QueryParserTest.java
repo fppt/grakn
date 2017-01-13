@@ -324,10 +324,10 @@ public class QueryParserTest extends AbstractMovieGraphTest {
                 "(evolves-from: $x ,evolves-to: $y) isa evolution;" +
                 "(evolves-from: $y, evolves-to: $z) isa evolution;").execute();
 
-        assertTrue(qb.match(name("pokemon").sub(ENTITY.getName())).ask().execute());
-        assertTrue(qb.match(name("evolution").sub(RELATION.getName())).ask().execute());
-        assertTrue(qb.match(name("evolves-from").sub(ROLE.getName())).ask().execute());
-        assertTrue(qb.match(name("evolves-to").sub(ROLE.getName())).ask().execute());
+        assertTrue(qb.match(name("pokemon").sub(ENTITY.getName().getValue())).ask().execute());
+        assertTrue(qb.match(name("evolution").sub(RELATION.getName().getValue())).ask().execute());
+        assertTrue(qb.match(name("evolves-from").sub(ROLE.getName().getValue())).ask().execute());
+        assertTrue(qb.match(name("evolves-to").sub(ROLE.getName().getValue())).ask().execute());
         assertTrue(qb.match(name("evolution").hasRole("evolves-from").hasRole("evolves-to")).ask().execute());
         assertTrue(qb.match(name("pokemon").playsRole("evolves-from").playsRole("evolves-to")).ask().execute());
 
@@ -416,7 +416,7 @@ public class QueryParserTest extends AbstractMovieGraphTest {
         qb.parse("insert '" + ruleTypeId + "' sub rule; \n" +
                 "isa my-rule-thing, lhs {" + lhs + "}, rhs {" + rhs + "};").execute();
 
-        assertTrue(qb.match(name("my-rule-thing").sub(RULE.getName())).ask().execute());
+        assertTrue(qb.match(name("my-rule-thing").sub(RULE.getName().getValue())).ask().execute());
 
         RuleType ruleType = graph.getRuleType(ruleTypeId);
         boolean found = false;

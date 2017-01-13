@@ -27,6 +27,7 @@ import ai.grakn.concept.RelationType;
 import ai.grakn.concept.Resource;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.concept.RoleType;
+import ai.grakn.concept.TypeName;
 import ai.grakn.engine.loader.Loader;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.migration.base.Migrator;
@@ -107,8 +108,8 @@ public class AbstractGraknMigratorTest extends EngineTestBase {
                 .findFirst().get());
     }
 
-    protected void assertRelationBetweenInstancesExists(Instance instance1, Instance instance2, String relation){
-        RelationType relationType = graph.getRelationType(relation);
+    protected void assertRelationBetweenInstancesExists(Instance instance1, Instance instance2, TypeName relation){
+        RelationType relationType = graph.getType(relation);
 
         RoleType role1 = instance1.playsRoles().stream().filter(r -> r.relationTypes().stream().anyMatch(rel -> rel.equals(relationType))).findFirst().get();
         assertTrue(instance1.relations(role1).stream().anyMatch(rel -> rel.rolePlayers().values().contains(instance2)));
@@ -133,14 +134,14 @@ public class AbstractGraknMigratorTest extends EngineTestBase {
         return instances;
     }
 
-    protected Resource getResource(Instance instance, String name) {
+    protected Resource getResource(Instance instance, TypeName name) {
         assertEquals(getResources(instance, name).count(), 1);
         return getResources(instance, name).findAny().get();
     }
 
-    protected Stream<Resource> getResources(Instance instance, String name) {
-        RoleType roleOwner = graph.getRoleType(Schema.Resource.HAS_RESOURCE_OWNER.getName(name));
-        RoleType roleOther = graph.getRoleType(Schema.Resource.HAS_RESOURCE_VALUE.getName(name));
+    protected Stream<Resource> getResources(Instance instance, TypeName name) {
+        RoleType roleOwner = graph.getType(Schema.Resource.HAS_RESOURCE_OWNER.getName(name));
+        RoleType roleOther = graph.getType(Schema.Resource.HAS_RESOURCE_VALUE.getName(name));
 
         Collection<Relation> relations = instance.relations(roleOwner);
         return relations.stream().map(r -> r.rolePlayers().get(roleOther).asResource());

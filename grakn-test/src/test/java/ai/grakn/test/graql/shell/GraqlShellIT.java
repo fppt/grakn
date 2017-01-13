@@ -171,7 +171,7 @@ public class GraqlShellIT extends AbstractRollbackGraphTest {
     @Test
     public void testAutocompleteFill() throws Exception {
         String result = testShell("match $x sub concep\t;\n");
-        assertThat(result, containsString(Schema.MetaSchema.RELATION.getName()));
+        assertThat(result, containsString(Schema.MetaSchema.RELATION.getName().getValue()));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class GraqlShellIT extends AbstractRollbackGraphTest {
     @Test
     public void testGraqlOutput() throws Exception {
         String result = testShell("", "-e", "match $x sub concept;", "-o", "graql");
-        assertThat(result, allOf(containsString("$x"), containsString(Schema.MetaSchema.ENTITY.getName())));
+        assertThat(result, allOf(containsString("$x"), containsString(Schema.MetaSchema.ENTITY.getName().getValue())));
     }
 
     @Test

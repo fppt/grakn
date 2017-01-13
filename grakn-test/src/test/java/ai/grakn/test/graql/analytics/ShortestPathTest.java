@@ -6,6 +6,7 @@ import ai.grakn.concept.Entity;
 import ai.grakn.concept.EntityType;
 import ai.grakn.concept.RelationType;
 import ai.grakn.concept.RoleType;
+import ai.grakn.concept.TypeName;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.graql.ComputeQuery;
 import ai.grakn.graql.Graql;
@@ -33,9 +34,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeFalse;
 
 public class ShortestPathTest extends AbstractGraphTest {
-    private static final String thing = "thing";
-    private static final String anotherThing = "anotherThing";
-    private static final String related = "related";
+    private static final TypeName thing = TypeName.of("thing");
+    private static final TypeName anotherThing = TypeName.of("anotherThing");
+    private static final TypeName related = TypeName.of("related");
     private static final String veryRelated = "veryRelated";
 
     private ConceptId entityId1;

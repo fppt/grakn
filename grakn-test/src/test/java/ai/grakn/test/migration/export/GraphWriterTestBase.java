@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import static ai.grakn.test.GraknTestEnv.factoryWithNewKeyspace;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.Assert.assertEquals;
@@ -112,7 +113,7 @@ public abstract class GraphWriterTestBase extends AbstractGraknMigratorTest {
     }
 
     public <V> Resource<V> getResourceFromGraph(GraknGraph graph, Resource<V> resource){
-        return graph.getResourceType(resource.type().getName()).getResource(resource.getValue());
+        return graph.getResourceType(resource.type().getName().getValue()).getResource(resource.getValue());
     }
 
     public void assertRelationCopied(Relation relation1, GraknGraph two){
@@ -120,9 +121,9 @@ public abstract class GraphWriterTestBase extends AbstractGraknMigratorTest {
             return;
         }
 
-        RelationType relationType = two.getRelationType(relation1.type().getName());
+        RelationType relationType = two.getRelationType(relation1.type().getName().getValue());
         Map<RoleType, Instance> rolemap = relation1.rolePlayers().entrySet().stream().collect(toMap(
-                e -> two.getRoleType(e.getKey().asType().getName()),
+                e -> two.getRoleType(e.getKey().asType().getName().getValue()),
                 e -> getInstanceUniqueByResourcesFromGraph(two, e.getValue())
         ));
 

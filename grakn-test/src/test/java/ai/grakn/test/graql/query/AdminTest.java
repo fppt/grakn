@@ -20,6 +20,7 @@ package ai.grakn.test.graql.query;
 
 import ai.grakn.concept.ConceptId;
 import ai.grakn.concept.Type;
+import ai.grakn.concept.TypeName;
 import ai.grakn.graql.DeleteQuery;
 import ai.grakn.graql.InsertQuery;
 import ai.grakn.graql.MatchQuery;
@@ -62,7 +63,7 @@ public class AdminTest extends AbstractMovieGraphTest {
 
         Set<Type> types = Stream.of(
                 "movie", "production", "tmdb-vote-count", "character", "production-with-cast", "has-cast"
-        ).map(graph::getType).collect(toSet());
+        ).map(name -> graph.<Type>getType(TypeName.of(name))).collect(toSet());
 
         assertEquals(types, query.admin().getTypes());
     }
@@ -136,7 +137,7 @@ public class AdminTest extends AbstractMovieGraphTest {
     @Test
     public void testInsertQueryGetTypes() {
         InsertQuery query = qb.insert(var("x").isa("person").has("name"), var().rel("actor", "x").isa("has-cast"));
-        Set<Type> types = Stream.of("person", "name", "actor", "has-cast").map(graph::getType).collect(toSet());
+        Set<Type> types = Stream.of("person", "name", "actor", "has-cast").map(name -> graph.<Type>getType(TypeName.of(name))).collect(toSet());
         assertEquals(types, query.admin().getTypes());
     }
 
@@ -146,7 +147,7 @@ public class AdminTest extends AbstractMovieGraphTest {
                         .insert(var("x").isa("person").has("name"), var().rel("actor", "x").isa("has-cast"));
 
         Set<Type> types =
-                Stream.of("movie", "person", "name", "actor", "has-cast").map(graph::getType).collect(toSet());
+                Stream.of("movie", "person", "name", "actor", "has-cast").map(name -> graph.<Type>getType(TypeName.of(name))).collect(toSet());
 
         assertEquals(types, query.admin().getTypes());
     }
