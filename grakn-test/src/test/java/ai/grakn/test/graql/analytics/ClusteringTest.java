@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static ai.grakn.test.GraknTestEnv.usingOrientDB;
 import static ai.grakn.test.GraknTestEnv.usingTinker;
@@ -164,7 +165,7 @@ public class ClusteringTest extends AbstractGraphTest {
         assertEquals(5, result.values().iterator().next().size());
 
         assertEquals(1, graph.graql().compute()
-                .cluster().in(thing, anotherThing, aResourceTypeName).members().execute().size());
+                .cluster().in(TypeName.of(thing), TypeName.of(anotherThing), TypeName.of(aResourceTypeName)).members().execute().size());
     }
 
     @Test

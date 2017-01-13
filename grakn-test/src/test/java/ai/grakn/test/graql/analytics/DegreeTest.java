@@ -122,7 +122,7 @@ public class DegreeTest extends AbstractGraphTest {
                 }
         ));
 
-        Map<Long, Set<String>> degrees2 = graph.graql().compute().degree().of("thing").execute();
+        Map<Long, Set<String>> degrees2 = graph.graql().compute().degree().of(TypeName.of("thing")).execute();
         assertEquals(2, degrees2.size());
         assertEquals(2, degrees2.get(1L).size());
         assertEquals(1, degrees2.get(3L).size());
@@ -196,7 +196,7 @@ public class DegreeTest extends AbstractGraphTest {
         graph.commit();
 
         // set subgraph
-        HashSet<String> ct = Sets.newHashSet("person", "animal", "mans-best-friend");
+        HashSet<TypeName> ct = Sets.newHashSet(TypeName.of("person"), TypeName.of("animal"), TypeName.of("mans-best-friend"));
         Map<Long, Set<String>> degrees = graph.graql().compute().degree().in(ct).execute();
 
         // check that dog has a degree to confirm sub has been inferred
