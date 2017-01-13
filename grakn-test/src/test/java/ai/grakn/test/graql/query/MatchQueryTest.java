@@ -123,7 +123,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
         Map<String, Concept> result = results.get(0);
         Resource<String> tgf = result.get("tgf").asResource();
 
-        assertEquals("title", tgf.type().getName());
+        assertEquals("title", tgf.type().getName().getValue());
         assertEquals("Godfather", tgf.getValue());
     }
 
@@ -296,7 +296,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
         assertEquals(1, results.size());
         Resource<Long> result = results.get(0).asResource();
         assertEquals(1000L, (long) result.getValue());
-        assertEquals("tmdb-vote-count", result.type().getName());
+        assertEquals("tmdb-vote-count", result.type().getName().getValue());
     }
 
     @Test
@@ -383,7 +383,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
         assertEquals(4, query.stream().count());
         assertTrue(query.stream().map(results -> results.get("x")).allMatch(
                 x -> x.asEntity().resources().stream().anyMatch(
-                        resource -> resource.type().getName().equals("release-date")
+                        resource -> resource.type().getName().getValue().equals("release-date")
                 )
         ));
     }
@@ -492,7 +492,7 @@ public class MatchQueryTest extends AbstractMovieGraphTest {
     public void testRegexResourceType() {
         MatchQuery query = qb.match(var("x").regex("(fe)?male"));
         assertEquals(1, query.stream().count());
-        assertEquals("gender", query.get("x").findFirst().get().asType().getName());
+        assertEquals("gender", query.get("x").findFirst().get().asType().getName().getValue());
     }
 
     @Test
