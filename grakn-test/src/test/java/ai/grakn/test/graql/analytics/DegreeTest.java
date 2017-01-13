@@ -26,6 +26,7 @@ import ai.grakn.concept.RelationType;
 import ai.grakn.concept.Resource;
 import ai.grakn.concept.ResourceType;
 import ai.grakn.concept.RoleType;
+import ai.grakn.concept.TypeName;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.graql.ComputeQuery;
 import ai.grakn.graql.internal.analytics.BulkResourceMutate;
@@ -132,7 +133,7 @@ public class DegreeTest extends AbstractGraphTest {
                 }
         ));
 
-        degrees2 = graph.graql().compute().degree().of("thing", "related").execute();
+        degrees2 = graph.graql().compute().degree().of(TypeName.of("thing"), TypeName.of("related")).execute();
         assertEquals(3, degrees2.size());
         assertEquals(2, degrees2.get(1L).size());
         assertEquals(3, degrees2.get(2L).size());
@@ -157,7 +158,7 @@ public class DegreeTest extends AbstractGraphTest {
         ));
 
         // compute degrees on subgraph
-        Map<Long, Set<String>> degrees3 = graph.graql().compute().degree().in("thing", "related").execute();
+        Map<Long, Set<String>> degrees3 = graph.graql().compute().degree().in(TypeName.of("thing"), TypeName.of("related")).execute();
         correctDegrees.put(id3, 1L);
         assertTrue(!degrees3.isEmpty());
         degrees3.entrySet().forEach(entry -> entry.getValue().forEach(
@@ -167,7 +168,7 @@ public class DegreeTest extends AbstractGraphTest {
                 }
         ));
 
-        degrees3 = graph.graql().compute().degree().of("thing").in("thing", "related").execute();
+        degrees3 = graph.graql().compute().degree().of(TypeName.of("thing")).in(TypeName.of("thing"), TypeName.of("related")).execute();
         assertEquals(2, degrees3.size());
         assertEquals(2, degrees3.get(1L).size());
         assertEquals(1, degrees3.get(3L).size());
@@ -257,7 +258,7 @@ public class DegreeTest extends AbstractGraphTest {
         graph.commit();
 
         // create a subgraph excluding resources and the relationship
-        HashSet<String> subGraphTypes = Sets.newHashSet("animal", "person", "mans-best-friend");
+        HashSet<TypeName> subGraphTypes = Sets.newHashSet(TypeName.of("animal"), TypeName.of("person"), TypeName.of("mans-best-friend"));
         Map<Long, Set<String>> degrees = graph.graql().compute().degree().in(subGraphTypes).execute();
         assertFalse(degrees.isEmpty());
         degrees.entrySet().forEach(entry -> entry.getValue().forEach(
@@ -268,7 +269,7 @@ public class DegreeTest extends AbstractGraphTest {
         ));
 
         // create a subgraph excluding resource type only
-        HashSet<String> almostFullTypes = Sets.newHashSet("animal", "person", "mans-best-friend", "has-name", "name");
+        HashSet<TypeName> almostFullTypes = Sets.newHashSet(TypeName.of("animal"), TypeName.of("person"), TypeName.of("mans-best-friend"), TypeName.of("has-name"), TypeName.of("name"));
         degrees = graph.graql().compute().degree().in(almostFullTypes).execute();
         assertFalse(degrees.isEmpty());
         degrees.entrySet().forEach(entry -> entry.getValue().forEach(
@@ -383,8 +384,8 @@ public class DegreeTest extends AbstractGraphTest {
         graph.commit();
 
         // create a subgraph with assertion on assertion
-        HashSet<String> ct =
-                Sets.newHashSet("animal", "person", "mans-best-friend", "start-date", "has-ownership-resource");
+        HashSet<TypeName> ct =
+                Sets.newHashSet(TypeName.of("animal"), TypeName.of("person"), TypeName.of("mans-best-friend"), TypeName.of("start-date"), TypeName.of("has-ownership-resource"));
         Map<Long, Set<String>> degrees = graph.graql().compute().degree().in(ct).execute();
         assertTrue(!degrees.isEmpty());
         degrees.entrySet().forEach(entry -> entry.getValue().forEach(
@@ -396,9 +397,9 @@ public class DegreeTest extends AbstractGraphTest {
 
         // create subgraph without assertion on assertion
         ct.clear();
-        ct.add("animal");
-        ct.add("person");
-        ct.add("mans-best-friend");
+        ct.add(TypeName.of("animal"));
+        ct.add(TypeName.of("person"));
+        ct.add(TypeName.of("mans-best-friend"));
         degrees = graph.graql().compute().degree().in(ct).execute();
         assertFalse(degrees.isEmpty());
         degrees.entrySet().forEach(entry -> entry.getValue().forEach(
@@ -525,7 +526,7 @@ public class DegreeTest extends AbstractGraphTest {
 
         // check degree for dave owning cats
         //TODO: should we count the relationship even if there is no cat attached?
-        HashSet<String> ct = Sets.newHashSet("mans-best-friend", "cat", "person");
+        HashSet<TypeName> ct = Sets.newHashSet(TypeName.of("mans-best-friend"), TypeName.of("cat"), TypeName.of("person"));
         Map<Long, Set<String>> degrees = graph.graql().compute().degree().in(ct).execute();
         assertFalse(degrees.isEmpty());
         degrees.entrySet().forEach(entry -> entry.getValue().forEach(
