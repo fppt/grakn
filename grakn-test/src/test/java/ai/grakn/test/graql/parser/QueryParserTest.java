@@ -478,7 +478,7 @@ public class QueryParserTest extends AbstractMovieGraphTest {
 
         Concept result = query.execute();
 
-        assertEquals("movie", result.asInstance().type().getName());
+        assertEquals("movie", result.asInstance().type().getName().getValue());
     }
 
     @Test
@@ -569,7 +569,7 @@ public class QueryParserTest extends AbstractMovieGraphTest {
     public void testRegexResourceType() {
         MatchQuery query = qb.parse("match $x regex /(fe)?male/;");
         assertEquals(1, query.stream().count());
-        assertEquals("gender", query.get("x").findFirst().get().asType().getName());
+        assertEquals("gender", query.get("x").findFirst().get().asType().getName().getValue());
     }
 
     @Test
