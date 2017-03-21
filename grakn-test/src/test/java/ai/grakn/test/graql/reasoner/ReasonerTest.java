@@ -114,28 +114,23 @@ public class ReasonerTest {
         Rule rule = Utility.createTransitiveRule(snbGraph.graph().getRelationType("sublocate"),
                 snbGraph.graph().getRoleType("member-location").getName(), snbGraph.graph().getRoleType("container-location").getName(), snbGraph.graph());
 
-        InferenceRule R = new InferenceRule(rule, snbGraph.graph());
-
         Pattern body = and(snbGraph.graph().graql().parsePatterns("(member-location: $x, container-location: $z) isa sublocate;" +
                 "(member-location: $z, container-location: $y) isa sublocate;"));
-        Pattern head = and(snbGraph.graph().graql().parsePatterns("(member-location: $x, container-location: $y) isa sublocate;"));
+        Pattern head = and(snbGraph.graph().graql().parsePatterns("isa sublocate (member-location: $x, container-location: $y);"));
 
-        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().addRule(body, head), snbGraph.graph());
-        assertTrue(R.getHead().equals(R2.getHead()));
-        assertTrue(R.getBody().equals(R2.getBody()));
+        assertEquals(conjunction(rule.getLHS().toString(), snbGraph.graph()), conjunction(body.toString(), snbGraph.graph()));
+        assertEquals(conjunction(rule.getRHS().toString(), snbGraph.graph()), conjunction(head.toString(), snbGraph.graph()));
     }
 
     @Test
     public void testReflexiveRule() {
         Rule rule = Utility.createReflexiveRule(snbGraph.graph().getRelationType("knows"), snbGraph.graph());
-        InferenceRule R = new InferenceRule(rule, snbGraph.graph());
 
         Pattern body = and(snbGraph.graph().graql().parsePatterns("($x, $y) isa knows;"));
         Pattern head = and(snbGraph.graph().graql().parsePatterns("($x, $x) isa knows;"));
 
-        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().addRule(body, head), snbGraph.graph());
-        assertTrue(R.getHead().equals(R2.getHead()));
-        assertTrue(R.getBody().equals(R2.getBody()));
+        assertEquals(conjunction(rule.getLHS().toString(), snbGraph.graph()), conjunction(body.toString(), snbGraph.graph()));
+        assertEquals(conjunction(rule.getRHS().toString(), snbGraph.graph()), conjunction(head.toString(), snbGraph.graph()));
     }
 
     @Test
