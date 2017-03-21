@@ -78,7 +78,7 @@ public class EntityTypeTest extends GraphTestBase{
 
     @Test
     public void testGetRoleTypeAsConceptType(){
-        RoleType test1 = graknGraph.putRoleType("test");
+        graknGraph.putRoleType("test");
         Type test2 = graknGraph.getEntityType("test");
         assertNull(test2);
     }
@@ -244,13 +244,15 @@ public class EntityTypeTest extends GraphTestBase{
 
     @Test
     public void testRulesOfHypothesis(){
-        Pattern lhs = graknGraph.graql().parsePattern("$x isa entity-type");
-        Pattern rhs = graknGraph.graql().parsePattern("$x isa entity-type");
+        Pattern lhs1 = graknGraph.graql().parsePattern("$x isa entity-type");
+        Pattern rhs1 = graknGraph.graql().parsePattern("$y isa entity-type");
+        Pattern lhs2 = graknGraph.graql().parsePattern("$x isa entity");
+        Pattern rhs2 = graknGraph.graql().parsePattern("$y isa entity");
         Type type = graknGraph.putEntityType("A Concept Type");
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
         assertEquals(0, type.getRulesOfHypothesis().size());
-        Rule rule1 = ruleType.addRule(lhs, rhs).addHypothesis(type);
-        Rule rule2 = ruleType.addRule(lhs, rhs).addHypothesis(type);
+        Rule rule1 = ruleType.addRule(lhs1, rhs1).addHypothesis(type);
+        Rule rule2 = ruleType.addRule(lhs2, rhs2).addHypothesis(type);
         assertEquals(2, type.getRulesOfHypothesis().size());
         assertTrue(type.getRulesOfHypothesis().contains(rule1));
         assertTrue(type.getRulesOfHypothesis().contains(rule2));
@@ -258,13 +260,17 @@ public class EntityTypeTest extends GraphTestBase{
 
     @Test
     public void getRulesOfConclusion(){
-        Pattern lhs = graknGraph.graql().parsePattern("$x isa entity-type");
-        Pattern rhs = graknGraph.graql().parsePattern("$x isa entity-type");
+        Pattern lhs1 = graknGraph.graql().parsePattern("$x isa entity-type");
+        Pattern rhs1 = graknGraph.graql().parsePattern("$y isa entity-type");
+        Pattern lhs2 = graknGraph.graql().parsePattern("$x isa entity");
+        Pattern rhs2 = graknGraph.graql().parsePattern("$y isa entity");
+
         Type type = graknGraph.putEntityType("A Concept Type");
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
+
         assertEquals(0, type.getRulesOfConclusion().size());
-        Rule rule1 = ruleType.addRule(lhs, rhs).addConclusion(type);
-        Rule rule2 = ruleType.addRule(lhs, rhs).addConclusion(type);
+        Rule rule1 = ruleType.addRule(lhs1, rhs1).addConclusion(type);
+        Rule rule2 = ruleType.addRule(lhs2, rhs2).addConclusion(type);
         assertEquals(2, type.getRulesOfConclusion().size());
         assertTrue(type.getRulesOfConclusion().contains(rule1));
         assertTrue(type.getRulesOfConclusion().contains(rule2));
