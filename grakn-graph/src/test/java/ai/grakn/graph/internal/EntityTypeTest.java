@@ -251,8 +251,8 @@ public class EntityTypeTest extends GraphTestBase{
         Type type = graknGraph.putEntityType("A Concept Type");
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
         assertEquals(0, type.getRulesOfHypothesis().size());
-        Rule rule1 = ruleType.addRule(lhs1, rhs1).addHypothesis(type);
-        Rule rule2 = ruleType.addRule(lhs2, rhs2).addHypothesis(type);
+        Rule rule1 = ruleType.putRule(lhs1, rhs1).addHypothesis(type);
+        Rule rule2 = ruleType.putRule(lhs2, rhs2).addHypothesis(type);
         assertEquals(2, type.getRulesOfHypothesis().size());
         assertTrue(type.getRulesOfHypothesis().contains(rule1));
         assertTrue(type.getRulesOfHypothesis().contains(rule2));
@@ -269,8 +269,8 @@ public class EntityTypeTest extends GraphTestBase{
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
 
         assertEquals(0, type.getRulesOfConclusion().size());
-        Rule rule1 = ruleType.addRule(lhs1, rhs1).addConclusion(type);
-        Rule rule2 = ruleType.addRule(lhs2, rhs2).addConclusion(type);
+        Rule rule1 = ruleType.putRule(lhs1, rhs1).addConclusion(type);
+        Rule rule2 = ruleType.putRule(lhs2, rhs2).addConclusion(type);
         assertEquals(2, type.getRulesOfConclusion().size());
         assertTrue(type.getRulesOfConclusion().contains(rule1));
         assertTrue(type.getRulesOfConclusion().contains(rule2));

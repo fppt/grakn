@@ -239,7 +239,7 @@ public class ConceptTest extends GraphTestBase{
         Pattern lhs = graknGraph.graql().parsePattern("$x isa entity-type");
         Pattern rhs = graknGraph.graql().parsePattern("$x isa entity-type");
         RuleType type = graknGraph.putRuleType("a type");
-        Concept concept = type.addRule(lhs, rhs);
+        Concept concept = type.putRule(lhs, rhs);
         assertTrue(concept.isRule());
         Rule concept2 = concept.asRule();
         assertEquals(concept2, concept);
@@ -258,7 +258,7 @@ public class ConceptTest extends GraphTestBase{
         Pattern lhs = graknGraph.graql().parsePattern("$x isa entity-type");
         Pattern rhs = graknGraph.graql().parsePattern("$x isa entity-type");
         RuleType type = graknGraph.putRuleType("a type");
-        Concept concept = type.addRule(lhs, rhs);
+        Concept concept = type.putRule(lhs, rhs);
         assertTrue(concept.isInstance());
         Instance concept2 = concept.asInstance();
         assertEquals(concept2, concept);

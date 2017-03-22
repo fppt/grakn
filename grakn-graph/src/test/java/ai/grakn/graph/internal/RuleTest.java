@@ -22,7 +22,6 @@ import ai.grakn.concept.EntityType;
 import ai.grakn.concept.Rule;
 import ai.grakn.concept.RuleType;
 import ai.grakn.concept.Type;
-import ai.grakn.exception.ConceptNotUniqueException;
 import ai.grakn.exception.GraknValidationException;
 import ai.grakn.exception.InvalidConceptValueException;
 import ai.grakn.graql.Pattern;
@@ -56,7 +55,7 @@ public class RuleTest extends GraphTestBase{
     @Test
     public void testType() {
         RuleType conceptType = graknGraph.putRuleType("A Thing");
-        Rule rule = conceptType.addRule(lhs, rhs);
+        Rule rule = conceptType.putRule(lhs, rhs);
         assertNotNull(rule.type());
         assertEquals(conceptType, rule.type());
     }
@@ -64,20 +63,20 @@ public class RuleTest extends GraphTestBase{
     @Test
     public void testRuleValues() throws Exception {
         RuleType conceptType = graknGraph.putRuleType("A Thing");
-        Rule rule = conceptType.addRule(lhs, rhs);
+        Rule rule = conceptType.putRule(lhs, rhs);
         assertEquals(lhs, rule.getLHS());
         assertEquals(rhs, rule.getRHS());
 
         expectedException.expect(InvalidConceptValueException.class);
         expectedException.expectMessage(NULL_VALUE.getMessage(RULE_LHS));
 
-        conceptType.addRule(null, null);
+        conceptType.putRule(null, null);
     }
 
     @Test
     public void testAddHypothesis() throws Exception {
         RuleType conceptType = graknGraph.putRuleType("A Thing");
-        Rule rule = conceptType.addRule(lhs, rhs);
+        Rule rule = conceptType.putRule(lhs, rhs);
         Vertex ruleVertex = graknGraph.getTinkerPopGraph().traversal().V(rule.getId().getRawValue()).next();
         Type type1 = graknGraph.putEntityType("A Concept Type 1");
         Type type2 = graknGraph.putEntityType("A Concept Type 2");
@@ -89,7 +88,7 @@ public class RuleTest extends GraphTestBase{
     @Test
     public void testAddConclusion() throws Exception {
         RuleType conceptType = graknGraph.putRuleType("A Thing");
-        Rule rule = conceptType.addRule(lhs, rhs);
+        Rule rule = conceptType.putRule(lhs, rhs);
         Vertex ruleVertex = graknGraph.getTinkerPopGraph().traversal().V(rule.getId().getRawValue()).next();
         Type type1 = graknGraph.putEntityType("A Concept Type 1");
         Type type2 = graknGraph.putEntityType("A Concept Type 2");
@@ -101,7 +100,7 @@ public class RuleTest extends GraphTestBase{
     @Test
     public void testHypothesisTypes(){
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
-        Rule rule = ruleType.addRule(lhs, rhs);
+        Rule rule = ruleType.putRule(lhs, rhs);
         assertEquals(0, rule.getHypothesisTypes().size());
 
         Type ct1 = graknGraph.putEntityType("A Concept Type 1");
@@ -115,7 +114,7 @@ public class RuleTest extends GraphTestBase{
     @Test
     public void testConclusionTypes(){
         RuleType ruleType = graknGraph.putRuleType("A Rule Type");
-        Rule rule = ruleType.addRule(lhs, rhs);
+        Rule rule = ruleType.putRule(lhs, rhs);
         assertEquals(0, rule.getConclusionTypes().size());
 
         Type ct1 = graknGraph.putEntityType("A Concept Type 1");
@@ -132,7 +131,7 @@ public class RuleTest extends GraphTestBase{
 
         lhs = graknGraph.graql().parsePattern("$x isa Your-Type");
         rhs = graknGraph.graql().parsePattern("$x isa My-Type");
-        Rule rule = graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        Rule rule = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
 
         expectedException.expect(GraknValidationException.class);
         expectedException.expectMessage(
@@ -147,7 +146,7 @@ public class RuleTest extends GraphTestBase{
 
         lhs = graknGraph.graql().parsePattern("$x isa My-Type");
         rhs = graknGraph.graql().parsePattern("$x has-role Your-Type");
-        Rule rule = graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        Rule rule = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
 
         expectedException.expect(GraknValidationException.class);
         expectedException.expectMessage(
@@ -164,7 +163,7 @@ public class RuleTest extends GraphTestBase{
         lhs = graknGraph.graql().parsePattern("$x isa type1");
         rhs = graknGraph.graql().parsePattern("$x isa type2");
 
-        Rule rule = graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        Rule rule = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
         assertTrue("Hypothesis is not empty before commit", rule.getHypothesisTypes().isEmpty());
         assertTrue("Conclusion is not empty before commit", rule.getConclusionTypes().isEmpty());
 
@@ -175,31 +174,27 @@ public class RuleTest extends GraphTestBase{
     }
 
     @Test
-    public void whenAddingDuplicateRulesOfTheSameTypeWithTheSamePattern_Throw(){
+    public void whenAddingDuplicateRulesOfTheSameTypeWithTheSamePattern_ReturnTheSameRule(){
         graknGraph.putEntityType("type1");
         lhs = graknGraph.graql().parsePattern("$x isa type1");
         rhs = graknGraph.graql().parsePattern("$x isa type1");
 
-        Rule rule = graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        Rule rule1 = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
+        Rule rule2 = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
 
-        expectedException.expect(ConceptNotUniqueException.class);
-        expectedException.expectMessage(ErrorMessage.DUPLICATE_RULES.getMessage(rule, lhs, rhs));
-
-        graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        assertEquals(rule1, rule2);
     }
 
     @Ignore //This is ignored because we currently have no way to determine if patterns with different variables name are equivalent
     @Test
-    public void whenAddingDuplicateRulesOfTheSameTypeWithDifferentPatternVariables_Throw(){
+    public void whenAddingDuplicateRulesOfTheSameTypeWithDifferentPatternVariables_ReturnTheSameRule(){
         graknGraph.putEntityType("type1");
         lhs = graknGraph.graql().parsePattern("$x isa type1");
         rhs = graknGraph.graql().parsePattern("$y isa type1");
 
-        Rule rule = graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        Rule rule1 = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
+        Rule rule2 = graknGraph.admin().getMetaRuleInference().putRule(lhs, rhs);
 
-        expectedException.expect(ConceptNotUniqueException.class);
-        expectedException.expectMessage(ErrorMessage.DUPLICATE_RULES.getMessage(rule, lhs, rhs));
-
-        graknGraph.admin().getMetaRuleInference().addRule(lhs, rhs);
+        assertEquals(rule1, rule2);
     }
 }

@@ -101,7 +101,7 @@ public class ReasonerTest {
         Pattern body = and(snbGraph.graph().graql().parsePatterns("(subject-location: $x, located-subject: $x1) isa resides;"));
         Pattern head = and(snbGraph.graph().graql().parsePatterns("(member-location: $x, container-location: $x1) isa sublocate;"));
 
-        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().addRule(body, head), snbGraph.graph());
+        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().putRule(body, head), snbGraph.graph());
         Rule rule = Utility.createSubPropertyRule(parent, child, roleMap, snbGraph.graph());
         InferenceRule R = new InferenceRule(rule, snbGraph.graph());
 
@@ -114,23 +114,28 @@ public class ReasonerTest {
         Rule rule = Utility.createTransitiveRule(snbGraph.graph().getRelationType("sublocate"),
                 snbGraph.graph().getRoleType("member-location").getName(), snbGraph.graph().getRoleType("container-location").getName(), snbGraph.graph());
 
+        InferenceRule R = new InferenceRule(rule, snbGraph.graph());
+
         Pattern body = and(snbGraph.graph().graql().parsePatterns("(member-location: $x, container-location: $z) isa sublocate;" +
                 "(member-location: $z, container-location: $y) isa sublocate;"));
-        Pattern head = and(snbGraph.graph().graql().parsePatterns("isa sublocate (member-location: $x, container-location: $y);"));
+        Pattern head = and(snbGraph.graph().graql().parsePatterns("(member-location: $x, container-location: $y) isa sublocate;"));
 
-        assertEquals(conjunction(rule.getLHS().toString(), snbGraph.graph()), conjunction(body.toString(), snbGraph.graph()));
-        assertEquals(conjunction(rule.getRHS().toString(), snbGraph.graph()), conjunction(head.toString(), snbGraph.graph()));
+        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().putRule(body, head), snbGraph.graph());
+        assertTrue(R.getHead().equals(R2.getHead()));
+        assertTrue(R.getBody().equals(R2.getBody()));
     }
 
     @Test
     public void testReflexiveRule() {
         Rule rule = Utility.createReflexiveRule(snbGraph.graph().getRelationType("knows"), snbGraph.graph());
+        InferenceRule R = new InferenceRule(rule, snbGraph.graph());
 
         Pattern body = and(snbGraph.graph().graql().parsePatterns("($x, $y) isa knows;"));
         Pattern head = and(snbGraph.graph().graql().parsePatterns("($x, $x) isa knows;"));
 
-        assertEquals(conjunction(rule.getLHS().toString(), snbGraph.graph()), conjunction(body.toString(), snbGraph.graph()));
-        assertEquals(conjunction(rule.getRHS().toString(), snbGraph.graph()), conjunction(head.toString(), snbGraph.graph()));
+        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().putRule(body, head), snbGraph.graph());
+        assertTrue(R.getHead().equals(R2.getHead()));
+        assertTrue(R.getBody().equals(R2.getBody()));
     }
 
     @Test
@@ -151,7 +156,7 @@ public class ReasonerTest {
                 "(member-location: $z, container-location: $y) isa sublocate;"));
         Pattern head = and(snbGraph.graph().graql().parsePatterns("(located-subject: $x, subject-location: $z) isa resides;"));
 
-        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().addRule(body, head), snbGraph.graph());
+        InferenceRule R2 = new InferenceRule(snbGraph.graph().admin().getMetaRuleInference().putRule(body, head), snbGraph.graph());
         assertTrue(R.getHead().equals(R2.getHead()));
         assertTrue(R.getBody().equals(R2.getBody()));
     }
@@ -216,7 +221,7 @@ public class ReasonerTest {
         MatchQuery query = qb.parse(queryString);
         Pattern body = and(snbGraph.graph().graql().parsePatterns("$x isa person;$x has name 'Bob';"));
         Pattern head = and(snbGraph.graph().graql().parsePatterns("$x has firstname 'Bob';"));
-        snbGraph.graph().admin().getMetaRuleInference().addRule(body, head);
+        snbGraph.graph().admin().getMetaRuleInference().putRule(body, head);
         Reasoner.commitGraph(snbGraph.graph());
 
         snbGraph.graph(); //Reopen transaction
@@ -562,7 +567,7 @@ public class ReasonerTest {
     public void testVarContraction3(){
         Pattern body = snbGraph.graph().graql().parsePattern("$x isa person");
         Pattern head = snbGraph.graph().graql().parsePattern("($x, $x) isa knows");
-        snbGraph.graph().admin().getMetaRuleInference().addRule(body, head);
+        snbGraph.graph().admin().getMetaRuleInference().putRule(body, head);
 
         String queryString = "match ($x, $y) isa knows;$x has name 'Bob';";
         String explicitQuery = "match $y isa person;$y has name 'Bob' or $y has name 'Charlie';";

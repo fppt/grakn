@@ -292,14 +292,14 @@ public class MovieGraph extends TestGraph {
         Pattern lhs = graph.graql().parsePattern("$x id 'expect-lhs'");
         Pattern rhs = graph.graql().parsePattern("$x id 'expect-rhs'");
 
-        Rule expectation = aRuleType.addRule(lhs, rhs)
+        Rule expectation = aRuleType.putRule(lhs, rhs)
                 .addConclusion(movie).addHypothesis(person);
 
         putResource(expectation, name, "expectation-rule");
 
         lhs = graph.graql().parsePattern("$x id 'materialize-lhs'");
         rhs = graph.graql().parsePattern("$x id 'materialize-rhs'");
-        Rule materialize = aRuleType.addRule(lhs, rhs)
+        Rule materialize = aRuleType.putRule(lhs, rhs)
                 .addConclusion(person).addConclusion(genre).addHypothesis(hasCast);
 
         putResource(materialize, name, "materialize-rule");
