@@ -24,6 +24,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.Memory;
 import org.apache.tinkerpop.gremlin.process.computer.MessageScope;
 import org.apache.tinkerpop.gremlin.process.computer.Messenger;
+import org.apache.tinkerpop.gremlin.process.computer.VertexComputeKey;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -76,8 +77,9 @@ public class DegreeVertexProgram extends GraknVertexProgram<Long> {
         degreePropertyKey = (String) this.persistentProperties.get(DEGREE);
     }
 
-    public Set<String> getElementComputeKeys() {
-        return Collections.singleton(degreePropertyKey);
+    @Override
+    public Set<VertexComputeKey> getVertexComputeKeys() {
+        return Collections.singleton(VertexComputeKey.of(degreePropertyKey, false));
     }
 
     @Override
