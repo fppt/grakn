@@ -141,11 +141,10 @@ public final class GraknSparkComputer extends AbstractHadoopGraphComputer {
                 .runWithBackgroundThread(this::submitWithExecutor, "SparkSubmitter");
     }
 
-    //TODO:fix this
     public void cancelJobs() {
-//        if (jobGroupId != null && graknGraphRDD != null && graknGraphRDD.sparkContext != null) {
-//            graknGraphRDD.sparkContext.cancelJobGroup(jobGroupId);
-//        }
+        if (jobGroupId != null) {
+            Spark.getContext().cancelJobGroup(jobGroupId);
+        }
     }
 
     private Future<ComputerResult> submitWithExecutor(Executor exec) {
