@@ -39,7 +39,6 @@ import ai.grakn.exception.GraphOperationException;
 import ai.grakn.exception.InvalidGraphException;
 import ai.grakn.exception.PropertyNotUniqueException;
 import ai.grakn.graph.admin.GraknAdmin;
-import ai.grakn.graph.internal.computer.GraknSparkComputer;
 import ai.grakn.graql.QueryBuilder;
 import ai.grakn.util.EngineCommunicator;
 import ai.grakn.util.ErrorMessage;
@@ -793,7 +792,7 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph,
         commitTransactionInternal();
 
         //TODO: Kill when analytics no longer needs this
-        GraknSparkComputer.refresh();
+//        GraknSparkComputer.refresh();
 
         LOG.trace("Graph committed.");
 

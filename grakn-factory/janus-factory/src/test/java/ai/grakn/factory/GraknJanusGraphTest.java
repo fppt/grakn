@@ -150,7 +150,7 @@ public class GraknJanusGraphTest extends JanusTestBase {
 
         //Closing so the cache is not accessed when doing the lookup
         graknGraph.commit();
-        graknGraph = titanGraphFactory.open(GraknTxType.WRITE);
+        graknGraph = janusGraphFactory.open(GraknTxType.WRITE);
 
         assertEquals(relation, graknGraph.getConcept(relation.getId()));
     }

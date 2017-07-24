@@ -58,7 +58,7 @@ public class GraknComputerImpl implements GraknComputer {
 
     public GraknComputerImpl(Graph graph) {
         this.graph = graph;
-        if(graph instanceof TinkerGraph){
+        if (graph instanceof TinkerGraph) {
             graphComputerClass = TinkerGraphComputer.class;
         } else {
             graphComputerClass = GraknSparkComputer.class;

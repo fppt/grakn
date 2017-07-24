@@ -22,7 +22,6 @@ import ai.grakn.GraknGraph;
 import ai.grakn.GraknSession;
 import ai.grakn.GraknTxType;
 import ai.grakn.concept.EntityType;
-import ai.grakn.graph.internal.computer.GraknSparkComputer;
 import ai.grakn.graql.Graql;
 import ai.grakn.test.EngineContext;
 import ai.grakn.test.GraknTestSetup;
@@ -89,13 +88,15 @@ public class CountTest {
             Assert.assertEquals(2L,
                     Graql.compute().withGraph(graph).count().in(nameThing).execute().longValue());
             Assert.assertEquals(3L, graph.graql().compute().count().execute().longValue());
-            GraknSparkComputer.clear();
+//            GraknSparkComputer.clear();
             Assert.assertEquals(3L, Graql.compute().count().withGraph(graph).execute().longValue());
         }
 
-        GraknSparkComputer.clear();
+//        GraknSparkComputer.clear();
         List<Long> list = new ArrayList<>(4);
-        for (long i = 0L; i < 4L; i++) {
+        long workerNumber = 6L;
+        if (GraknTestSetup.usingTinker()) workerNumber = 1L;
+        for (long i = 0L; i < workerNumber; i++) {
             list.add(i);
         }
 
