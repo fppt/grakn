@@ -36,8 +36,6 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.process.computer.TinkerGraphComputer;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -91,6 +89,7 @@ public class GraknComputerImpl implements GraknComputer {
 
     @Override
     public ComputerResult compute(VertexProgram program, MapReduce... mapReduces) {
+        // only for internal tasks
         return compute(null, program, mapReduces);
     }
 
@@ -156,41 +155,4 @@ public class GraknComputerImpl implements GraknComputer {
 
         graphComputer.vertices(vertexFilter).edges(edgeFilter);
     }
-
-    private void vertices(Set<LabelId> types) {
-        if (types != null && !types.isEmpty()) {
-            List<Traversal> orTraversals = types.stream()
-                    .map(type -> __.has(Schema.VertexProperty.THING_TYPE_LABEL_ID.name(), type.getValue()))
-                    .collect(Collectors.toList());
-//            Traversal<Vertex, Vertex> vertexFilter = __.or(orTraversals.toArray(new Traversal[types.size()]));
-            Traversal<Vertex, Vertex> vertexFilter = __.or(orTraversals.toArray(new Traversal[types.size()]));
-            graphComputer.vertices(vertexFilter);
-        }
-    }
-
-    private void edges(Set<LabelId> types) {
-        if (types != null && !types.isEmpty()) {
-
-            List<Traversal<Vertex, Edge>> orTraversals = new ArrayList<>();
-            orTraversals.add(__.bothE(Schema.EdgeLabel.SHORTCUT.getLabel()));
-
-//            types.stream()
-//                    .map(type -> __
-////                            .inE(Schema.EdgeLabel.RESOURCE.getLabel())
-//                            .has(Schema.EdgeProperty.RELATION_TYPE_LABEL_ID.name(), type.getValue()))
-//                    .forEach(a->orTraversals.add(a));
-
-            Traversal<Vertex, Edge> edgeFilter;//= __.or(orTraversals.toArray(new Traversal[orTraversals.size()]));
-
-
-            edgeFilter = __.union(
-                    __.bothE(Schema.EdgeLabel.SHORTCUT.getLabel()),
-                    __.bothE(Schema.EdgeLabel.RESOURCE.getLabel())
-                            .has(Schema.EdgeProperty.RELATION_TYPE_LABEL_ID.name(),
-                                    P.within(types.stream().map(t -> t.getValue()).collect(Collectors.toSet())))
-            );
-            graphComputer.edges(edgeFilter);
-        }
-    }
-
 }

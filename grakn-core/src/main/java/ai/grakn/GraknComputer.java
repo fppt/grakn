@@ -63,6 +63,7 @@ public interface GraknComputer {
 
     /**
      * Execute the given vertex program using a graph computer.
+     * For internal tasks only.
      *
      * @param program   the vertex program
      * @param mapReduce a list of mapReduce job
