@@ -72,7 +72,7 @@ class PathQueryImpl extends AbstractComputeQuery<Optional<List<Concept>>> implem
                 subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
 
         try {
-            result = getGraphComputer().compute(
+            result = getGraphComputer().compute(subLabelIds,
                     new ShortestPathVertexProgram(subLabelIds, sourceId, destinationId),
                     new ClusterMemberMapReduce(subLabelIds, ShortestPathVertexProgram.FOUND_IN_ITERATION));
         } catch (RuntimeException e) {

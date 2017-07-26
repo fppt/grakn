@@ -20,6 +20,7 @@ package ai.grakn.graql.internal.query.analytics;
 
 import ai.grakn.GraknGraph;
 import ai.grakn.concept.Label;
+import ai.grakn.concept.LabelId;
 import ai.grakn.graql.analytics.CountQuery;
 import ai.grakn.graql.internal.analytics.CountMapReduce;
 import org.apache.tinkerpop.gremlin.process.computer.ComputerResult;
@@ -29,6 +30,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
@@ -49,8 +51,12 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
             return 0L;
         }
 
-        ComputerResult result = getGraphComputer().compute(new CountMapReduce(
-                subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet())));
+        Set<LabelId> TypeLabelIds =
+                subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
+        ComputerResult result = getGraphComputer().compute(TypeLabelIds, new CountMapReduce(
+                TypeLabelIds));
+        System.out.println("result = " + result);
+        System.out.println("result.memory() = " + result.memory().asMap());
         Map<Serializable, Long> count = result.memory().get(CountMapReduce.class.getName());
 
         LOGGER.debug("Count = " + count.get(MapReduce.NullObject.instance()));

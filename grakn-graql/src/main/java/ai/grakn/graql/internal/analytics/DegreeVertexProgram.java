@@ -108,14 +108,12 @@ public class DegreeVertexProgram extends GraknVertexProgram<Long> {
     }
 
     void degreeMessagePassing(Vertex vertex, Messenger<Long> messenger) {
-        if (vertexHasSelectedTypeId(vertex, selectedTypes)) {
-            messenger.sendMessage(messageScopeShortcutIn, 1L);
-            messenger.sendMessage(messageScopeShortcutOut, 1L);
-        }
+        messenger.sendMessage(messageScopeShortcutIn, 1L);
+        messenger.sendMessage(messageScopeShortcutOut, 1L);
     }
 
     void degreeMessageCounting(Vertex vertex, Messenger<Long> messenger) {
-        if (vertexHasSelectedTypeId(vertex, selectedTypes, ofLabelIds)) {
+        if (vertexHasSelectedTypeId(vertex, ofLabelIds)) {
             vertex.property(degreePropertyKey, getMessageCount(messenger));
         }
     }

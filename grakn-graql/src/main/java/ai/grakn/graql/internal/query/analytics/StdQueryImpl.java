@@ -55,7 +55,7 @@ class StdQueryImpl extends AbstractStatisticsQuery<Optional<Double>> implements 
 
         String randomId = getRandomJobId();
 
-        ComputerResult result = getGraphComputer().compute(
+        ComputerResult result = getGraphComputer().compute(allSubLabelIds,
                 new DegreeStatisticsVertexProgram(allSubLabelIds, statisticsResourceLabelIds, randomId),
                 new StdMapReduce(statisticsResourceLabelIds, dataType, DegreeVertexProgram.DEGREE + randomId));
         Map<Serializable, Map<String, Double>> std = result.memory().get(StdMapReduce.class.getName());

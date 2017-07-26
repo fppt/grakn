@@ -64,12 +64,12 @@ class ClusterQueryImpl<T> extends AbstractComputeQuery<T> implements ClusterQuer
 
         if (members) {
             if (anySize) {
-                result = getGraphComputer().compute(
+                result = getGraphComputer().compute(withResourceRelationLabelIds,
                         new ConnectedComponentVertexProgram(withResourceRelationLabelIds, randomId),
                         new ClusterMemberMapReduce(subLabelIds,
                                 ConnectedComponentVertexProgram.CLUSTER_LABEL + randomId));
             } else {
-                result = getGraphComputer().compute(
+                result = getGraphComputer().compute(withResourceRelationLabelIds,
                         new ConnectedComponentVertexProgram(withResourceRelationLabelIds, randomId),
                         new ClusterMemberMapReduce(subLabelIds,
                                 ConnectedComponentVertexProgram.CLUSTER_LABEL + randomId, clusterSize));
@@ -79,12 +79,12 @@ class ClusterQueryImpl<T> extends AbstractComputeQuery<T> implements ClusterQuer
             return result.memory().get(ClusterMemberMapReduce.class.getName());
         } else {
             if (anySize) {
-                result = getGraphComputer().compute(
+                result = getGraphComputer().compute(withResourceRelationLabelIds,
                         new ConnectedComponentVertexProgram(withResourceRelationLabelIds, randomId),
                         new ClusterSizeMapReduce(subLabelIds,
                                 ConnectedComponentVertexProgram.CLUSTER_LABEL + randomId));
             } else {
-                result = getGraphComputer().compute(
+                result = getGraphComputer().compute(withResourceRelationLabelIds,
                         new ConnectedComponentVertexProgram(withResourceRelationLabelIds, randomId),
                         new ClusterSizeMapReduce(subLabelIds,
                                 ConnectedComponentVertexProgram.CLUSTER_LABEL + randomId, clusterSize));

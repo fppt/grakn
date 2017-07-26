@@ -93,9 +93,7 @@ public class ConnectedComponentVertexProgram extends GraknVertexProgram<String> 
                     String id = vertex.value(Schema.VertexProperty.ID.name());
                     vertex.property(clusterLabel, id);
                     messenger.sendMessage(messageScopeShortcutIn, id);
-                    messenger.sendMessage(messageScopeResourceIn, id);
                     messenger.sendMessage(messageScopeShortcutOut, id);
-                    messenger.sendMessage(messageScopeResourceOut, id);
                 }
                 break;
             default:
@@ -113,7 +111,6 @@ public class ConnectedComponentVertexProgram extends GraknVertexProgram<String> 
         if (max.compareTo(currentMax) > 0) {
             vertex.property(clusterLabel, max);
             messenger.sendMessage(messageScopeShortcutIn, max);
-            messenger.sendMessage(messageScopeResourceIn, max);
             messenger.sendMessage(messageScopeShortcutOut, max);
             //memory.and(VOTE_TO_HALT, false);
             memory.getIteration();

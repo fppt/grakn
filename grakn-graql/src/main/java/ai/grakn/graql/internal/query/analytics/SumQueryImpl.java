@@ -54,7 +54,7 @@ class SumQueryImpl extends AbstractStatisticsQuery<Optional<Number>> implements 
 
         String randomId = getRandomJobId();
 
-        ComputerResult result = getGraphComputer().compute(
+        ComputerResult result = getGraphComputer().compute(allSubLabelIds,
                 new DegreeStatisticsVertexProgram(allSubLabelIds, statisticsResourceLabelIds, randomId),
                 new SumMapReduce(statisticsResourceLabelIds, dataType, DegreeVertexProgram.DEGREE + randomId));
         Map<Serializable, Number> sum = result.memory().get(SumMapReduce.class.getName());
