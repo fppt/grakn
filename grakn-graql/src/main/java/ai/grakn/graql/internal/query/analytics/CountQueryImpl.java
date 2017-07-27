@@ -23,6 +23,7 @@ import ai.grakn.concept.Label;
 import ai.grakn.concept.LabelId;
 import ai.grakn.graql.analytics.CountQuery;
 import ai.grakn.graql.internal.analytics.CountMapReduce;
+import ai.grakn.graql.internal.analytics.CountVertexProgram;
 import org.apache.tinkerpop.gremlin.process.computer.ComputerResult;
 import org.apache.tinkerpop.gremlin.process.computer.MapReduce;
 
@@ -51,12 +52,17 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
             return 0L;
         }
 
+        System.out.println("subLabels = " + subLabels);
         Set<LabelId> TypeLabelIds =
                 subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
-        ComputerResult result = getGraphComputer().compute(TypeLabelIds, new CountMapReduce(
-                TypeLabelIds));
-        System.out.println("result = " + result);
-        System.out.println("result.memory() = " + result.memory().asMap());
+
+        String randomId = getRandomJobId();
+
+        ComputerResult result = getGraphComputer().compute(
+                TypeLabelIds,
+                new CountVertexProgram(randomId),
+                new CountMapReduce(CountVertexProgram.EDGE_COUNT + randomId));
+
         Map<Serializable, Long> count = result.memory().get(CountMapReduce.class.getName());
 
         LOGGER.debug("Count = " + count.get(MapReduce.NullObject.instance()));

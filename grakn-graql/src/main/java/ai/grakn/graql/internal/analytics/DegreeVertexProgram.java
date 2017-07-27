@@ -111,8 +111,8 @@ public class DegreeVertexProgram extends GraknVertexProgram<Long> {
     }
 
     private void degreeMessagePassing(Messenger<Long> messenger) {
-        messenger.sendMessage(messageScopeShortcutIn, 1L);
-        messenger.sendMessage(messageScopeShortcutOut, 1L);
+        messenger.sendMessage(messageScopeIn, 1L);
+        messenger.sendMessage(messageScopeOut, 1L);
     }
 
     private void degreeMessageCounting(Messenger<Long> messenger, Vertex vertex) {

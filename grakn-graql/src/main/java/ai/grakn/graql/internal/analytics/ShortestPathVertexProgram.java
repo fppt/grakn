@@ -123,14 +123,14 @@ public class ShortestPathVertexProgram extends GraknVertexProgram<Tuple> {
                         LOGGER.debug("Found source vertex");
                         vertex.property(PREDECESSOR, "");
                         vertex.property(VISITED_IN_ITERATION, 1);
-                        messenger.sendMessage(messageScopeShortcutIn, Pair.with(id, 1));
-                        messenger.sendMessage(messageScopeShortcutOut, Pair.with(id, 1));
+                        messenger.sendMessage(messageScopeIn, Pair.with(id, 1));
+                        messenger.sendMessage(messageScopeOut, Pair.with(id, 1));
                     } else if (persistentProperties.get(DESTINATION).equals(id)) {
                         LOGGER.debug("Found destination vertex");
                         vertex.property(PREDECESSOR, "");
                         vertex.property(VISITED_IN_ITERATION, -1);
-                        messenger.sendMessage(messageScopeShortcutIn, Pair.with(id, -1));
-                        messenger.sendMessage(messageScopeShortcutOut, Pair.with(id, -1));
+                        messenger.sendMessage(messageScopeIn, Pair.with(id, -1));
+                        messenger.sendMessage(messageScopeOut, Pair.with(id, -1));
                     }
                 }
                 break;
@@ -205,8 +205,8 @@ public class ShortestPathVertexProgram extends GraknVertexProgram<Tuple> {
             }
 
             int message = hasMessageSource ? 1 : -1;
-            messenger.sendMessage(messageScopeShortcutIn, Pair.with(id, message));
-            messenger.sendMessage(messageScopeShortcutOut, Pair.with(id, message));
+            messenger.sendMessage(messageScopeIn, Pair.with(id, message));
+            messenger.sendMessage(messageScopeOut, Pair.with(id, message));
 
         } else {
             int messageDirection = memory.getIteration() / (int) vertex.value(VISITED_IN_ITERATION);

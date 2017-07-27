@@ -47,10 +47,10 @@ public abstract class GraknVertexProgram<T> extends CommonOLAP implements Vertex
 
     static final Logger LOGGER = LoggerFactory.getLogger(GraknVertexProgram.class);
 
-    static final MessageScope.Local<?> messageScopeShortcutIn = MessageScope.Local.of(__::inE);
-    static final MessageScope.Local<?> messageScopeShortcutOut = MessageScope.Local.of(__::outE);
+    static final MessageScope.Local<?> messageScopeIn = MessageScope.Local.of(__::inE);
+    static final MessageScope.Local<?> messageScopeOut = MessageScope.Local.of(__::outE);
     static final Set<MessageScope> messageScopeSetShortcut =
-            Sets.newHashSet(messageScopeShortcutIn, messageScopeShortcutOut);
+            Sets.newHashSet(messageScopeIn, messageScopeOut);
 
     @Override
     public Set<MessageScope> getMessageScopes(final Memory memory) {

@@ -109,9 +109,9 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
     public Set<MessageScope> getMessageScopes(final Memory memory) {
         switch (memory.getIteration()) {
             case 0:
-                return Collections.singleton(messageScopeShortcutIn);
+                return Collections.singleton(messageScopeIn);
             case 1:
-                return Collections.singleton(messageScopeShortcutOut);
+                return Collections.singleton(messageScopeOut);
             default:
                 return Collections.emptySet();
         }

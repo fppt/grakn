@@ -18,15 +18,11 @@
 
 package ai.grakn.graql.internal.analytics;
 
-import ai.grakn.concept.LabelId;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.Set;
-
-import static ai.grakn.graql.internal.analytics.Utility.vertexHasSelectedTypeId;
 
 /**
  * The MapReduce program for counting the number of instances in a graph
@@ -42,19 +38,18 @@ public class CountMapReduce extends GraknMapReduce<Long> {
     public CountMapReduce() {
     }
 
-    public CountMapReduce(Set<LabelId> labelIds) {
-        super(labelIds);
+    public CountMapReduce(String edgeCountPropertyKey) {
+        this.persistentProperties.put(CountVertexProgram.EDGE_COUNT, edgeCountPropertyKey);
     }
 
     @Override
     public void safeMap(final Vertex vertex, final MapEmitter<Serializable, Long> emitter) {
-        if (vertexHasSelectedTypeId(vertex, selectedTypes)) {
+        if (vertex.property((String) persistentProperties.get(CountVertexProgram.EDGE_COUNT)).isPresent()) {
+            emitter.emit(NullObject.instance(),
+                    1L + (Long) vertex.value((String) persistentProperties.get(CountVertexProgram.EDGE_COUNT)));
+        } else {
             emitter.emit(NullObject.instance(), 1L);
-            return;
         }
-
-        // TODO: this is a bug with hasNext implementation - must send a message
-        emitter.emit(NullObject.instance(), 0L);
     }
 
     @Override

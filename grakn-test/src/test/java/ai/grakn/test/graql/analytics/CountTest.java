@@ -21,7 +21,9 @@ package ai.grakn.test.graql.analytics;
 import ai.grakn.GraknGraph;
 import ai.grakn.GraknSession;
 import ai.grakn.GraknTxType;
+import ai.grakn.concept.Entity;
 import ai.grakn.concept.EntityType;
+import ai.grakn.concept.ResourceType;
 import ai.grakn.graql.Graql;
 import ai.grakn.test.EngineContext;
 import ai.grakn.test.GraknTestSetup;
@@ -35,6 +37,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeFalse;
 
 public class CountTest {
@@ -115,6 +118,31 @@ public class CountTest {
         Assert.assertEquals(1, result.size());
         Assert.assertEquals(3L, result.iterator().next().longValue());
 
+    }
+
+    @Test
+    public void testDegreeWithHasResourceEdges() {
+        try (GraknGraph graph = factory.open(GraknTxType.WRITE)) {
+            EntityType thingy = graph.putEntityType("thingy");
+            ResourceType<String> name = graph.putResourceType("name", ResourceType.DataType.STRING);
+            thingy.resource(name);
+            Entity entity1 = thingy.addEntity();
+            entity1.resource(name.putResource("1"));
+            graph.commit();
+        }
+
+        long count;
+        try (GraknGraph graph = factory.open(GraknTxType.READ)) {
+            count = graph.graql().compute().count().execute();
+            assertEquals(count, 3L);
+
+            count = graph.graql().compute().count().in("name").execute();
+            assertEquals(count, 1L);
+
+            //TODO: need to redefine the right answer
+//            count = graph.graql().compute().count().in("has-name").execute();
+//            assertEquals(count, 1L);
+        }
     }
 
     private Long executeCount(GraknSession factory) {

@@ -69,9 +69,9 @@ public class DegreeStatisticsVertexProgram extends DegreeVertexProgram {
     public Set<MessageScope> getMessageScopes(final Memory memory) {
         switch (memory.getIteration()) {
             case 0:
-                return Collections.singleton(messageScopeShortcutIn);
+                return Collections.singleton(messageScopeIn);
             case 1:
-                return Collections.singleton(messageScopeShortcutOut);
+                return Collections.singleton(messageScopeOut);
             default:
                 return Collections.emptySet();
         }
@@ -87,13 +87,13 @@ public class DegreeStatisticsVertexProgram extends DegreeVertexProgram {
                                                   Set<LabelId> selectedLabelIds, Set<LabelId> ofLabelIds) {
         LabelId labelId = Utility.getVertexTypeId(vertex);
         if (labelId.isValid() && selectedLabelIds.contains(labelId) && !ofLabelIds.contains(labelId)) {
-            messenger.sendMessage(messageScopeShortcutIn, 1L);
+            messenger.sendMessage(messageScopeIn, 1L);
         }
     }
 
     static void degreeStatisticsStepResourceRelation(Vertex vertex, Messenger<Long> messenger) {
         if (vertex.label().equals(Schema.BaseType.RELATION.name()) && messenger.receiveMessages().hasNext()) {
-            messenger.sendMessage(messageScopeShortcutOut, 1L);
+            messenger.sendMessage(messageScopeOut, 1L);
         }
     }
 
