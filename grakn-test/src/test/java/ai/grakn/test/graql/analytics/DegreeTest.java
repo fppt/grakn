@@ -514,14 +514,21 @@ public class DegreeTest {
         ResourceType<String> name = graph.putResourceType("name", ResourceType.DataType.STRING);
         thingy.resource(name);
         Entity entity1 = thingy.addEntity();
-        Entity entity2 = thingy.addEntity();
         entity1.resource(name.putResource("1"));
+        graph.commit();
 
+        try (GraknGraph graph = factory.open(GraknTxType.READ)) {
+            Map<Long, Set<String>> degrees = graph.graql().compute().degree().in().execute();
+            assertEquals(degrees.size(), 1);
+            assertEquals(degrees.get(1L).size(), 2);
+        }
+
+        graph = factory.open(GraknTxType.WRITE);
+        Entity entity2 = thingy.addEntity();
         Role role1 = graph.putRole("role1");
         Role role2 = graph.putRole("role2");
         thingy.plays(role1).plays(role2);
         RelationType related = graph.putRelationType("related").relates(role1).relates(role2);
-
         related.addRelation()
                 .addRolePlayer(role1, entity1)
                 .addRolePlayer(role2, entity2);
@@ -532,6 +539,12 @@ public class DegreeTest {
             assertEquals(degrees.size(), 2);
             assertEquals(degrees.get(0L).size(), 1);
             assertEquals(degrees.get(1L).size(), 2);
+
+            Map<Long, Set<String>> degrees2 = graph.graql().compute().degree().execute();
+            assertEquals(degrees2.size(), 2);
+            System.out.println("degrees2 = " + degrees2);
+            assertEquals(degrees2.get(2L).size(), 2);
+            assertEquals(degrees2.get(1L).size(), 2);
         }
     }
 
