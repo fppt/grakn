@@ -21,16 +21,12 @@ package ai.grakn.graql.internal.query.analytics;
 import ai.grakn.GraknGraph;
 import ai.grakn.concept.Label;
 import ai.grakn.concept.LabelId;
-import ai.grakn.concept.OntologyConcept;
 import ai.grakn.concept.RelationType;
-import ai.grakn.concept.Type;
 import ai.grakn.graql.analytics.CountQuery;
 import ai.grakn.graql.internal.analytics.CountMapReduce;
 import ai.grakn.graql.internal.analytics.CountVertexProgram;
 import org.apache.tinkerpop.gremlin.process.computer.ComputerResult;
-import org.apache.tinkerpop.gremlin.process.computer.MapReduce;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -63,10 +59,6 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
                 .map(type -> graph.get().admin().convertToId(type.getLabel()))
                 .collect(Collectors.toSet());
 
-        System.out.println("rolePlayerLabelIds = " + rolePlayerLabelIds);
-        System.out.println("subLabels = " + subLabels);
-
-
         Set<LabelId> typeLabelIds =
                 subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
 
@@ -75,15 +67,23 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
         String randomId = getRandomJobId();
 
         ComputerResult result = getGraphComputer().compute(
-                rolePlayerLabelIds,
+                false, rolePlayerLabelIds,
                 new CountVertexProgram(randomId),
                 new CountMapReduce(CountVertexProgram.EDGE_COUNT + randomId));
 
-        Map<Serializable, Long> count = result.memory().get(CountMapReduce.class.getName());
+        Map<LabelId, Long> count = result.memory().get(CountMapReduce.class.getName());
 
-        LOGGER.debug("Count = " + count.get(MapReduce.NullObject.instance()));
+        long finalCount = count.keySet().stream()
+                .filter(typeLabelIds::contains)
+                .map(count::get)
+                .reduce(0L, (x, y) -> x + y);
+        if (count.containsKey(LabelId.invalid())) {
+            finalCount += count.get(LabelId.invalid());
+        }
+
+        LOGGER.debug("Count = " + finalCount);
         LOGGER.info("CountMapReduce is done in " + (System.currentTimeMillis() - startTime) + " ms");
-        return count.get(MapReduce.NullObject.instance());
+        return finalCount;
     }
 
     @Override

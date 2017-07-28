@@ -68,6 +68,7 @@ abstract class AbstractComputeQuery<T> implements ComputeQuery<T> {
     Set<EntityType> entityTypes = new HashSet<>();
     Set<RelationType> relationTypes = new HashSet<>();
     Set<ResourceType> resourceTypes = new HashSet<>();
+
     private String url;
 
     @Override
