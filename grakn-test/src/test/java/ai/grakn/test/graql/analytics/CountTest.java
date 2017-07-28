@@ -140,8 +140,8 @@ public class CountTest {
             assertEquals(count, 1L);
 
             //TODO: need to redefine the right answer
-//            count = graph.graql().compute().count().in("has-name").execute();
-//            assertEquals(count, 1L);
+            count = graph.graql().compute().count().in("has-name").execute();
+            assertEquals(count, 1L);
         }
     }
 

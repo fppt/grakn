@@ -52,6 +52,19 @@ public interface GraknComputer {
     /**
      * Execute the given vertex program using a graph computer.
      *
+     * @param includesShortcut whether the graph computer should include shortcut edges
+     * @param types            instance types in the subgraph
+     * @param program          the vertex program
+     * @param mapReduce        a list of mapReduce job
+     * @return the result of the computation
+     * @see ComputerResult
+     */
+    @CheckReturnValue
+    ComputerResult compute(Boolean includesShortcut, Set<LabelId> types, VertexProgram program, MapReduce... mapReduce);
+
+    /**
+     * Execute the given vertex program using a graph computer.
+     *
      * @param types     instance types in the subgraph
      * @param program   the vertex program
      * @param mapReduce a list of mapReduce job
@@ -63,7 +76,6 @@ public interface GraknComputer {
 
     /**
      * Execute the given vertex program using a graph computer.
-     * For internal tasks only.
      *
      * @param program   the vertex program
      * @param mapReduce a list of mapReduce job
@@ -75,17 +87,7 @@ public interface GraknComputer {
 
     /**
      * Execute the given map reduce job using a graph computer.
-     *
-     * @param types     instance types in the subgraph
-     * @param mapReduce the map reduce job
-     * @return the result of the computation
-     * @see ComputerResult
-     */
-    @CheckReturnValue
-    ComputerResult compute(Set<LabelId> types, MapReduce mapReduce);
-
-    /**
-     * Execute the given map reduce job using a graph computer.
+     * For internal tasks only.
      *
      * @param mapReduce the map reduce job
      * @return the result of the computation

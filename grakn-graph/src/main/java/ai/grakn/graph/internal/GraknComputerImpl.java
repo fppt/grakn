@@ -36,6 +36,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.tinkergraph.process.computer.TinkerGraphComputer;
 import org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerGraph;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -75,33 +76,28 @@ public class GraknComputerImpl implements GraknComputer {
     }
 
     @Override
-    public ComputerResult compute(Set<LabelId> types, VertexProgram program, MapReduce... mapReduces) {
+    public ComputerResult compute(Boolean includesShortcut, Set<LabelId> types,
+                                  VertexProgram program, MapReduce... mapReduces) {
         try {
-            graphComputer = getGraphComputer().program(program);
+            if (program != null) graphComputer = getGraphComputer().program(program);
             for (MapReduce mapReduce : mapReduces)
                 graphComputer = graphComputer.mapReduce(mapReduce);
-            applyFilters(types);
+            applyFilters(types, includesShortcut);
             return graphComputer.submit().get();
         } catch (InterruptedException | ExecutionException e) {
             throw asRuntimeException(e);
         }
+    }
+
+    @Override
+    public ComputerResult compute(Set<LabelId> types, VertexProgram program, MapReduce... mapReduces) {
+        return compute(true, types, program, mapReduces);
     }
 
     @Override
     public ComputerResult compute(VertexProgram program, MapReduce... mapReduces) {
         // only for internal tasks
-        return compute(null, program, mapReduces);
-    }
-
-    @Override
-    public ComputerResult compute(Set<LabelId> types, MapReduce mapReduce) {
-        try {
-            graphComputer = getGraphComputer().mapReduce(mapReduce);
-            applyFilters(types);
-            return graphComputer.submit().get();
-        } catch (InterruptedException | ExecutionException e) {
-            throw asRuntimeException(e);
-        }
+        return compute(Collections.emptySet(), program, mapReduces);
     }
 
     @Override
@@ -141,17 +137,21 @@ public class GraknComputerImpl implements GraknComputer {
         return graph.compute(this.graphComputerClass);
     }
 
-    private void applyFilters(Set<LabelId> types) {
-        if (types == null) return;
+    private void applyFilters(Set<LabelId> types, boolean includesShortcut) {
+        if (types == null || types.isEmpty()) return;
         Set<Integer> labelIds = types.stream().map(LabelId::getValue).collect(Collectors.toSet());
 
         Traversal<Vertex, Vertex> vertexFilter =
                 __.has(Schema.VertexProperty.THING_TYPE_LABEL_ID.name(), P.within(labelIds));
 
-        Traversal<Vertex, Edge> edgeFilter = __.union(
-                __.bothE(Schema.EdgeLabel.SHORTCUT.getLabel()),
-                __.bothE(Schema.EdgeLabel.RESOURCE.getLabel())
-                        .has(Schema.EdgeProperty.RELATION_TYPE_LABEL_ID.name(), P.within(labelIds)));
+        Traversal<Vertex, Edge> edgeFilter = includesShortcut ?
+                __.union(
+                        __.bothE(Schema.EdgeLabel.SHORTCUT.getLabel()),
+                        __.bothE(Schema.EdgeLabel.RESOURCE.getLabel())
+                                .has(Schema.EdgeProperty.RELATION_TYPE_LABEL_ID.name(), P.within(labelIds))) :
+                __.union(
+                        __.bothE(Schema.EdgeLabel.RESOURCE.getLabel())
+                                .has(Schema.EdgeProperty.RELATION_TYPE_LABEL_ID.name(), P.within(labelIds)));
 
         graphComputer.vertices(vertexFilter).edges(edgeFilter);
     }

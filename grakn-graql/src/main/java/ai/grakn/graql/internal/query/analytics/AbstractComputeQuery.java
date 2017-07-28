@@ -63,6 +63,11 @@ abstract class AbstractComputeQuery<T> implements ComputeQuery<T> {
     GraknComputer graknComputer = null;
     String keySpace;
     Set<Label> subLabels = new HashSet<>();
+    Set<Type> subTypes = new HashSet<>();
+
+    Set<EntityType> entityTypes = new HashSet<>();
+    Set<RelationType> relationTypes = new HashSet<>();
+    Set<ResourceType> resourceTypes = new HashSet<>();
     private String url;
 
     @Override
@@ -117,6 +122,18 @@ abstract class AbstractComputeQuery<T> implements ComputeQuery<T> {
         keySpace = theGraph.getKeyspace();
         url = theGraph.admin().getEngineUrl();
 
+        EntityType metaEntityType = theGraph.admin().getMetaEntityType();
+        entityTypes.addAll(metaEntityType.subs());
+        entityTypes.remove(metaEntityType);
+
+        ResourceType<?> metaResourceType = theGraph.admin().getMetaResourceType();
+        resourceTypes.addAll(metaResourceType.subs());
+        resourceTypes.remove(metaResourceType);
+
+        RelationType metaRelationType = theGraph.admin().getMetaRelationType();
+        relationTypes.addAll(metaRelationType.subs());
+        relationTypes.remove(metaRelationType);
+
         getAllSubTypes(theGraph);
     }
 
@@ -139,7 +156,14 @@ abstract class AbstractComputeQuery<T> implements ComputeQuery<T> {
             subLabels.remove(metaEntityType.getLabel());
             subLabels.remove(metaResourceType.getLabel());
             subLabels.remove(metaRelationType.getLabel());
+
+
+            subTypes.addAll(entityTypes);
+            subTypes.addAll(relationTypes);
+            subTypes.addAll(resourceTypes);
+
         } else {
+            subTypes = subGraph;
             for (Type type : subGraph) {
                 type.subs().forEach(subType -> this.subLabels.add(subType.getLabel()));
             }

@@ -21,6 +21,9 @@ package ai.grakn.graql.internal.query.analytics;
 import ai.grakn.GraknGraph;
 import ai.grakn.concept.Label;
 import ai.grakn.concept.LabelId;
+import ai.grakn.concept.OntologyConcept;
+import ai.grakn.concept.RelationType;
+import ai.grakn.concept.Type;
 import ai.grakn.graql.analytics.CountQuery;
 import ai.grakn.graql.internal.analytics.CountMapReduce;
 import ai.grakn.graql.internal.analytics.CountVertexProgram;
@@ -52,14 +55,27 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
             return 0L;
         }
 
+        Set<LabelId> rolePlayerLabelIds = subTypes.stream()
+                .filter(type -> relationTypes.contains(type))
+                .map(relationType -> ((RelationType) relationType).relates())
+                .filter(roles -> roles.size() == 2)
+                .flatMap(roles -> roles.stream().flatMap(role -> role.playedByTypes().stream()))
+                .map(type -> graph.get().admin().convertToId(type.getLabel()))
+                .collect(Collectors.toSet());
+
+        System.out.println("rolePlayerLabelIds = " + rolePlayerLabelIds);
         System.out.println("subLabels = " + subLabels);
-        Set<LabelId> TypeLabelIds =
+
+
+        Set<LabelId> typeLabelIds =
                 subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
+
+        rolePlayerLabelIds.addAll(typeLabelIds);
 
         String randomId = getRandomJobId();
 
         ComputerResult result = getGraphComputer().compute(
-                TypeLabelIds,
+                rolePlayerLabelIds,
                 new CountVertexProgram(randomId),
                 new CountMapReduce(CountVertexProgram.EDGE_COUNT + randomId));
 
