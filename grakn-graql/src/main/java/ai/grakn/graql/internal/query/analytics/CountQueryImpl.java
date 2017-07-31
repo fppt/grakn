@@ -51,9 +51,8 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
             return 0L;
         }
 
-        Set<LabelId> rolePlayerLabelIds = subTypes.stream()
-                .filter(type -> relationTypes.contains(type))
-                .map(relationType -> ((RelationType) relationType).relates())
+        Set<LabelId> rolePlayerLabelIds = relationTypes.stream()
+                .map(RelationType::relates)
                 .filter(roles -> roles.size() == 2)
                 .flatMap(roles -> roles.stream().flatMap(role -> role.playedByTypes().stream()))
                 .map(type -> graph.get().admin().convertToId(type.getLabel()))
