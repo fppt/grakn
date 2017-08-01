@@ -50,7 +50,7 @@ class MedianQueryImpl extends AbstractStatisticsQuery<Optional<Number>> implemen
         String randomId = getRandomJobId();
 
         ComputerResult result = getGraphComputer().compute(allSubLabelIds,
-                new MedianVertexProgram(allSubLabelIds, statisticsResourceLabelIds, dataType, randomId));
+                new MedianVertexProgram(statisticsResourceLabelIds, dataType, randomId));
 
         Number finalResult = result.memory().get(MedianVertexProgram.MEDIAN);
         LOGGER.debug("Median = " + finalResult);

@@ -126,8 +126,6 @@ public class DegreeTest {
             }
         }).collect(Collectors.toSet());
         result.forEach(degrees -> {
-            System.out.println(degrees);
-            System.out.println(correctDegrees);
             assertEquals(3, degrees.size());
             degrees.forEach((key, value) -> value.forEach(
                     id -> {
@@ -542,7 +540,6 @@ public class DegreeTest {
 
             Map<Long, Set<String>> degrees2 = graph.graql().compute().degree().execute();
             assertEquals(degrees2.size(), 2);
-            System.out.println("degrees2 = " + degrees2);
             assertEquals(degrees2.get(2L).size(), 2);
             assertEquals(degrees2.get(1L).size(), 2);
         }

@@ -24,8 +24,11 @@ import ai.grakn.util.Schema;
 import com.google.common.collect.Sets;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.Memory;
+import org.apache.tinkerpop.gremlin.process.computer.MemoryComputeKey;
 import org.apache.tinkerpop.gremlin.process.computer.MessageScope;
 import org.apache.tinkerpop.gremlin.process.computer.Messenger;
+import org.apache.tinkerpop.gremlin.process.computer.VertexComputeKey;
+import org.apache.tinkerpop.gremlin.process.traversal.Operator;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
@@ -68,9 +71,23 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
     private static final String FOUND = "medianVertexProgram.found";
     private static final String LABEL_SELECTED = "medianVertexProgram.labelSelected";
 
-    private static final Set<String> MEMORY_COMPUTE_KEYS = Sets.newHashSet(COUNT, MEDIAN, FOUND,
-            INDEX_START, INDEX_END, INDEX_MEDIAN, PIVOT, PIVOT_POSITIVE, PIVOT_NEGATIVE,
-            POSITIVE_COUNT, NEGATIVE_COUNT, LABEL_SELECTED);
+    private static final Set<MemoryComputeKey> MEMORY_COMPUTE_KEYS = Sets.newHashSet(
+            MemoryComputeKey.of(MEDIAN, null, false, false),
+            MemoryComputeKey.of(LABEL_SELECTED, null, true, true),
+            MemoryComputeKey.of(FOUND, null, false, true),
+
+            MemoryComputeKey.of(INDEX_START, null, false, true),
+            MemoryComputeKey.of(INDEX_END, null, false, true),
+            MemoryComputeKey.of(INDEX_MEDIAN, null, false, true),
+
+            MemoryComputeKey.of(COUNT, Operator.sumLong, false, true),
+            MemoryComputeKey.of(POSITIVE_COUNT, Operator.sumLong, false, true),
+            MemoryComputeKey.of(NEGATIVE_COUNT, Operator.sumLong, false, true),
+
+            MemoryComputeKey.of(PIVOT, Operator.assign, true, true),
+            MemoryComputeKey.of(PIVOT_POSITIVE, Operator.assign, true, true),
+            MemoryComputeKey.of(PIVOT_NEGATIVE, Operator.assign, true, true)
+    );
 
     private Set<LabelId> statisticsResourceLabelIds = new HashSet<>();
 
@@ -81,9 +98,8 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
     public MedianVertexProgram() {
     }
 
-    public MedianVertexProgram(Set<LabelId> selectedLabelId, Set<LabelId> statisticsResourceLabelIds,
+    public MedianVertexProgram(Set<LabelId> statisticsResourceLabelIds,
                                ResourceType.DataType resourceDataType, String randomId) {
-        this.selectedTypes = selectedLabelId;
         this.statisticsResourceLabelIds = statisticsResourceLabelIds;
 
         String resourceDataTypeValue = resourceDataType.equals(ResourceType.DataType.LONG) ?
@@ -96,12 +112,13 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
         persistentProperties.put(LABEL, labelKey);
     }
 
-    public Set<String> getElementComputeKeys() {
-        return Sets.newHashSet(degreePropertyKey, labelKey);
+    public Set<VertexComputeKey> getVertexComputeKeys() {
+        return Sets.newHashSet(VertexComputeKey.of(degreePropertyKey, true),
+                VertexComputeKey.of(labelKey, true));
     }
 
     @Override
-    public Set getMemoryComputeKeys() {
+    public Set<MemoryComputeKey> getMemoryComputeKeys() {
         return MEMORY_COMPUTE_KEYS;
     }
 
@@ -171,9 +188,9 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
                     vertex.property(degreePropertyKey, degree);
                     // select pivot randomly
                     if (degree > 0) {
-                        memory.set(PIVOT,
+                        memory.add(PIVOT,
                                 vertex.value((String) persistentProperties.get(RESOURCE_DATA_TYPE)));
-                        //memory.incr(COUNT, degree);
+                        memory.add(COUNT, degree);
                     }
                 }
                 break;
@@ -191,7 +208,6 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
                     }
                 }
                 break;
-
             // default case is almost the same as case 5, except that in case 5 no vertex has label
             default:
                 if (vertexHasSelectedTypeId(vertex, statisticsResourceLabelIds) &&
@@ -210,14 +226,14 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
 
     private void updateMemoryPositive(Vertex vertex, Memory memory, Number value) {
         vertex.property(labelKey, memory.getIteration());
-        //memory.incr(POSITIVE_COUNT, vertex.value(degreePropertyKey));
-        memory.set(PIVOT_POSITIVE, value);
+        memory.add(POSITIVE_COUNT, vertex.value(degreePropertyKey));
+        memory.add(PIVOT_POSITIVE, value);
     }
 
     private void updateMemoryNegative(Vertex vertex, Memory memory, Number value) {
         vertex.property(labelKey, -memory.getIteration());
-        //memory.incr(NEGATIVE_COUNT, vertex.value(degreePropertyKey));
-        memory.set(PIVOT_NEGATIVE, value);
+        memory.add(NEGATIVE_COUNT, vertex.value(degreePropertyKey));
+        memory.add(PIVOT_NEGATIVE, value);
     }
 
     @Override
