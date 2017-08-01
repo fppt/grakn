@@ -18,15 +18,12 @@
 
 package ai.grakn.graql.internal.analytics;
 
-import ai.grakn.concept.LabelId;
 import ai.grakn.util.Schema;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
 import java.io.Serializable;
 import java.util.Iterator;
-
-import static ai.grakn.concept.LabelId.invalid;
 
 /**
  * The MapReduce program for counting the number of instances in a graph
@@ -49,9 +46,10 @@ public class CountMapReduce extends GraknMapReduce<Long> {
     @Override
     public void safeMap(final Vertex vertex, final MapEmitter<Serializable, Long> emitter) {
         if (vertex.property((String) persistentProperties.get(CountVertexProgram.EDGE_COUNT)).isPresent()) {
-            emitter.emit(invalid(), vertex.value((String) persistentProperties.get(CountVertexProgram.EDGE_COUNT)));
+            emitter.emit(RESERVED_TYPE_LABEL_KEY,
+                    vertex.value((String) persistentProperties.get(CountVertexProgram.EDGE_COUNT)));
         }
-        emitter.emit(LabelId.of(vertex.value(Schema.VertexProperty.THING_TYPE_LABEL_ID.name())), 1L);
+        emitter.emit(vertex.value(Schema.VertexProperty.THING_TYPE_LABEL_ID.name()), 1L);
     }
 
     @Override

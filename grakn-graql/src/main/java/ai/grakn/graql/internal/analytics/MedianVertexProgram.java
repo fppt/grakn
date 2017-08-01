@@ -159,7 +159,7 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
     public void safeExecute(final Vertex vertex, Messenger<Long> messenger, final Memory memory) {
         switch (memory.getIteration()) {
             case 0:
-                degreeStatisticsStepResourceOwner(vertex, messenger, selectedTypes, statisticsResourceLabelIds);
+                degreeStatisticsStepResourceOwner(vertex, messenger, statisticsResourceLabelIds);
                 break;
             case 1:
                 degreeStatisticsStepResourceRelation(vertex, messenger);

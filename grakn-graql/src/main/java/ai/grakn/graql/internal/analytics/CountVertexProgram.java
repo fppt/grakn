@@ -19,10 +19,12 @@
 package ai.grakn.graql.internal.analytics;
 
 import ai.grakn.util.CommonUtil;
+import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.process.computer.Memory;
 import org.apache.tinkerpop.gremlin.process.computer.MessageScope;
 import org.apache.tinkerpop.gremlin.process.computer.Messenger;
 import org.apache.tinkerpop.gremlin.process.computer.VertexComputeKey;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 
 import java.util.Collections;
@@ -40,7 +42,7 @@ public class CountVertexProgram extends GraknVertexProgram<Long> {
     // element key
     public static final String EDGE_COUNT = "countVertexProgram.edgeCount";
 
-    String edgeCountPropertyKey;
+    private String edgeCountPropertyKey;
 
     // Needed internally for OLAP tasks
     public CountVertexProgram() {
@@ -49,6 +51,12 @@ public class CountVertexProgram extends GraknVertexProgram<Long> {
     public CountVertexProgram(String randomId) {
         this.edgeCountPropertyKey = EDGE_COUNT + randomId;
         this.persistentProperties.put(EDGE_COUNT, edgeCountPropertyKey);
+    }
+
+    @Override
+    public void loadState(final Graph graph, final Configuration configuration) {
+        super.loadState(graph, configuration);
+        edgeCountPropertyKey = (String) this.persistentProperties.get(EDGE_COUNT);
     }
 
     @Override

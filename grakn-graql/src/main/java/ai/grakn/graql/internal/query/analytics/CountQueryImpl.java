@@ -33,6 +33,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ai.grakn.graql.internal.analytics.GraknMapReduce.RESERVED_TYPE_LABEL_KEY;
+
 class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
 
     CountQueryImpl(Optional<GraknGraph> graph) {
@@ -70,14 +72,14 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
                 new CountVertexProgram(randomId),
                 new CountMapReduce(CountVertexProgram.EDGE_COUNT + randomId));
 
-        Map<LabelId, Long> count = result.memory().get(CountMapReduce.class.getName());
+        Map<Integer, Long> count = result.memory().get(CountMapReduce.class.getName());
 
         long finalCount = count.keySet().stream()
-                .filter(typeLabelIds::contains)
+                .filter(id -> typeLabelIds.contains(LabelId.of(id)))
                 .map(count::get)
                 .reduce(0L, (x, y) -> x + y);
-        if (count.containsKey(LabelId.invalid())) {
-            finalCount += count.get(LabelId.invalid());
+        if (count.containsKey(RESERVED_TYPE_LABEL_KEY)) {
+            finalCount += count.get(RESERVED_TYPE_LABEL_KEY);
         }
 
         LOGGER.debug("Count = " + finalCount);
