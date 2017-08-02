@@ -54,9 +54,6 @@ public class CountTest {
 
     @Before
     public void setUp() {
-        // TODO: Make orientdb support analytics
-        assumeFalse(GraknTestSetup.usingOrientDB());
-
         factory = rule.factoryWithNewKeyspace();
     }
 
