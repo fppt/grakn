@@ -51,14 +51,11 @@ import static ai.grakn.graql.internal.analytics.Utility.vertexHasSelectedTypeId;
 public class MedianVertexProgram extends GraknVertexProgram<Long> {
 
     private static final int MAX_ITERATION = 40;
+    public static final String MEDIAN = "medianVertexProgram.median";
+
     private static final String RESOURCE_DATA_TYPE = "medianVertexProgram.resourceDataType";
     private static final String RESOURCE_TYPE = "medianVertexProgram.statisticsResourceType";
-
-    // element key
     private static final String LABEL = "medianVertexProgram.label";
-
-    // memory key
-    public static final String MEDIAN = "medianVertexProgram.median";
     private static final String COUNT = "medianVertexProgram.count";
     private static final String INDEX_START = "medianVertexProgram.indexStart";
     private static final String INDEX_END = "medianVertexProgram.indexEnd";
@@ -86,8 +83,7 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
 
             MemoryComputeKey.of(PIVOT, Operator.assign, true, true),
             MemoryComputeKey.of(PIVOT_POSITIVE, Operator.assign, true, true),
-            MemoryComputeKey.of(PIVOT_NEGATIVE, Operator.assign, true, true)
-    );
+            MemoryComputeKey.of(PIVOT_NEGATIVE, Operator.assign, true, true));
 
     private Set<LabelId> statisticsResourceLabelIds = new HashSet<>();
 
@@ -114,7 +110,8 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
 
     @Override
     public Set<VertexComputeKey> getVertexComputeKeys() {
-        return Sets.newHashSet(VertexComputeKey.of(degreePropertyKey, true),
+        return Sets.newHashSet(
+                VertexComputeKey.of(degreePropertyKey, true),
                 VertexComputeKey.of(labelKey, true));
     }
 

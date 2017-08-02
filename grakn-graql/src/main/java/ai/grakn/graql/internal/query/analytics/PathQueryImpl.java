@@ -72,7 +72,7 @@ class PathQueryImpl extends AbstractComputeQuery<Optional<List<Concept>>> implem
 
         try {
             result = getGraphComputer().compute(subLabelIds,
-                    new ShortestPathVertexProgram(subLabelIds, sourceId, destinationId),
+                    new ShortestPathVertexProgram(sourceId, destinationId),
                     new ClusterMemberMapReduce(ShortestPathVertexProgram.FOUND_IN_ITERATION));
         } catch (RuntimeException e) {
             if ((e.getCause() instanceof IllegalStateException && e.getCause().getMessage().equals(ErrorMessage.NO_PATH_EXIST.getMessage())) ||
