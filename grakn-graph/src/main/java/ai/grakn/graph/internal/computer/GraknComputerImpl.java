@@ -20,7 +20,6 @@ package ai.grakn.graph.internal.computer;
 
 import ai.grakn.GraknComputer;
 import ai.grakn.concept.LabelId;
-import ai.grakn.graph.internal.computer.GraknSparkComputer;
 import ai.grakn.util.ErrorMessage;
 import ai.grakn.util.Schema;
 import org.apache.tinkerpop.gremlin.process.computer.ComputerResult;
