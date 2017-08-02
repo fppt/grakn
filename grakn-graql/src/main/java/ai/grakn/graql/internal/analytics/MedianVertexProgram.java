@@ -112,6 +112,7 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
         persistentProperties.put(LABEL, labelKey);
     }
 
+    @Override
     public Set<VertexComputeKey> getVertexComputeKeys() {
         return Sets.newHashSet(VertexComputeKey.of(degreePropertyKey, true),
                 VertexComputeKey.of(labelKey, true));

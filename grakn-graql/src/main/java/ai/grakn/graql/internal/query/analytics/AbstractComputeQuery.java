@@ -21,6 +21,7 @@ package ai.grakn.graql.internal.query.analytics;
 import ai.grakn.Grakn;
 import ai.grakn.GraknComputer;
 import ai.grakn.GraknGraph;
+import ai.grakn.concept.Concept;
 import ai.grakn.concept.ConceptId;
 import ai.grakn.concept.EntityType;
 import ai.grakn.concept.Label;
@@ -194,9 +195,9 @@ abstract class AbstractComputeQuery<T> implements ComputeQuery<T> {
     }
 
     Set<Label> getHasResourceRelationTypes() {
-        return subLabels.stream()
-                .filter(type -> graph.get().getOntologyConcept(type).isResourceType())
-                .map(Schema.ImplicitType.HAS::getLabel)
+        return subTypes.stream()
+                .filter(Concept::isResourceType)
+                .map(resourceType -> Schema.ImplicitType.HAS.getLabel(resourceType.getLabel()))
                 .collect(Collectors.toSet());
     }
 

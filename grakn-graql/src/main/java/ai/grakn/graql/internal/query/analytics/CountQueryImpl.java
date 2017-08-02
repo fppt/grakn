@@ -19,6 +19,7 @@
 package ai.grakn.graql.internal.query.analytics;
 
 import ai.grakn.GraknGraph;
+import ai.grakn.concept.Concept;
 import ai.grakn.concept.Label;
 import ai.grakn.concept.LabelId;
 import ai.grakn.concept.RelationType;
@@ -53,16 +54,16 @@ class CountQueryImpl extends AbstractComputeQuery<Long> implements CountQuery {
             return 0L;
         }
 
-        Set<LabelId> rolePlayerLabelIds = relationTypes.stream()
-                .map(RelationType::relates)
+        Set<LabelId> rolePlayerLabelIds = subTypes.stream()
+                .filter(Concept::isRelationType)
+                .map(relationType -> ((RelationType) relationType).relates())
                 .filter(roles -> roles.size() == 2)
                 .flatMap(roles -> roles.stream().flatMap(role -> role.playedByTypes().stream()))
                 .map(type -> graph.get().admin().convertToId(type.getLabel()))
+                .filter(LabelId::isValid)
                 .collect(Collectors.toSet());
 
-        Set<LabelId> typeLabelIds =
-                subLabels.stream().map(graph.get().admin()::convertToId).collect(Collectors.toSet());
-
+        Set<LabelId> typeLabelIds = convertLabelsToIds(subLabels);
         rolePlayerLabelIds.addAll(typeLabelIds);
 
         String randomId = getRandomJobId();
