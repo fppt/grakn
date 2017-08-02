@@ -950,8 +950,9 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph,
             //Now that we know the relation needs to be copied we need to find the roles the other casting is playing
             otherRelation.allRolePlayers().forEach((roleType, instances) -> {
                 Optional<RelationReified> relationReified = RelationImpl.from(otherRelation).reified();
-                if (instances.contains(other) && relationReified.isPresent())
+                if (instances.contains(other) && relationReified.isPresent()) {
                     putShortcutEdge(main, relationReified.get(), roleType);
+                }
             });
         }
 
@@ -980,10 +981,10 @@ public abstract class AbstractGraknGraph<G extends Graph> implements GraknGraph,
 
     @Override
     public void updateConceptCounts(Map<ConceptId, Long> typeCounts) {
-        typeCounts.entrySet().forEach(entry -> {
-            if (entry.getValue() != 0) {
-                ConceptImpl concept = getConcept(entry.getKey());
-                concept.setShardCount(concept.getShardCount() + entry.getValue());
+        typeCounts.forEach((key, value) -> {
+            if (value != 0) {
+                ConceptImpl concept = getConcept(key);
+                concept.setShardCount(concept.getShardCount() + value);
             }
         });
     }
