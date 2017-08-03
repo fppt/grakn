@@ -77,7 +77,7 @@ public class ShortestPathVertexProgram extends GraknVertexProgram<Tuple> {
             MemoryComputeKey.of(PREDECESSOR_FROM_DESTINATION, Operator.assign, true, true),
             MemoryComputeKey.of(PREDECESSORS, Operator.assign, false, true),
 
-            MemoryComputeKey.of(MIDDLE, null, false, false));
+            MemoryComputeKey.of(MIDDLE, Operator.assign, false, false));
 
     // Needed internally for OLAP tasks
     public ShortestPathVertexProgram() {

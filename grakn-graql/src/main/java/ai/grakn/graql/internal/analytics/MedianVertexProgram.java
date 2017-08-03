@@ -69,13 +69,13 @@ public class MedianVertexProgram extends GraknVertexProgram<Long> {
     private static final String LABEL_SELECTED = "medianVertexProgram.labelSelected";
 
     private static final Set<MemoryComputeKey> MEMORY_COMPUTE_KEYS = Sets.newHashSet(
-            MemoryComputeKey.of(MEDIAN, null, false, false),
-            MemoryComputeKey.of(LABEL_SELECTED, null, true, true),
-            MemoryComputeKey.of(FOUND, null, false, true),
+            MemoryComputeKey.of(MEDIAN, Operator.assign, false, false),
+            MemoryComputeKey.of(LABEL_SELECTED, Operator.assign, true, true),
+            MemoryComputeKey.of(FOUND, Operator.assign, false, true),
 
-            MemoryComputeKey.of(INDEX_START, null, false, true),
-            MemoryComputeKey.of(INDEX_END, null, false, true),
-            MemoryComputeKey.of(INDEX_MEDIAN, null, false, true),
+            MemoryComputeKey.of(INDEX_START, Operator.assign, false, true),
+            MemoryComputeKey.of(INDEX_END, Operator.assign, false, true),
+            MemoryComputeKey.of(INDEX_MEDIAN, Operator.assign, false, true),
 
             MemoryComputeKey.of(COUNT, Operator.sumLong, false, true),
             MemoryComputeKey.of(POSITIVE_COUNT, Operator.sumLong, false, true),

@@ -51,11 +51,11 @@ public class ShortestPathTest {
     public GraknSession factory;
 
     @ClassRule
-    public static EngineContext rule = EngineContext.startInMemoryServer();
+    public static final EngineContext context = EngineContext.startInMemoryServer();
 
     @Before
     public void setUp() {
-        factory = rule.factoryWithNewKeyspace();
+        factory = context.factoryWithNewKeyspace();
     }
 
     @Test(expected = GraqlQueryException.class)
